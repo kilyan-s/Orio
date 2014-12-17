@@ -10,9 +10,11 @@
 
 	28							50								72		
 
-
 */
-// Temporary patch until all browsers support unprefixed context.
+var jeu1 = function(){
+	
+}
+// Temporary patch until all browsers support unprefixed context
 if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudioContext'))
     window.webkitAudioContext = AudioContext;
 
@@ -27,17 +29,6 @@ var panner;
 var source;
 
 var gain;
-
-
-/******
-
-	Draw
-
-*******/
-
-var canvas = document.getElementById("canvas");
-var ctx = canvas.getContext("2d");
-
 
 /*
 	REVERB
@@ -101,8 +92,6 @@ var interval;
 var score1;
 //Touche appuyée
 var touche;
-//compteur pour les vies lors de la collision
-var i =0;
 /******
 
 	On définit les zones de collision
@@ -124,22 +113,6 @@ zoneDroite = {
 	taille: 20
 };
 
-
-var perso = {
-	x: 333,
-	y:364,
-	dep: 277,
-	url: "img/perso.svg"
-}
-
-/////// Perso
-var imgperso = new Image();
-imgperso.src = perso.url;
-
-var vie = 3;
-var coeur = new Image();
-coeur.src = "img/vie.svg"
-
 // Permet de changer le type de reverb
 function setReverbImpulseResponse(url, convolver) {
     // Load impulse response asynchronously
@@ -155,7 +128,7 @@ function setReverbImpulseResponse(url, convolver) {
             },
 
             function(buffer) {
-                // console.log("Error decoding impulse response!");
+                console.log("Error decoding impulse response!");
             }
         );
     }
@@ -164,7 +137,7 @@ function setReverbImpulseResponse(url, convolver) {
 }
 
 // Permet de changer le son de la source
-function setAudioSource(chooseSource, i) {
+function setAudioSource(chooseSource, i, tab, context) {
     var buffer = bufferList[i];
 
     // See if we have cached buffer
@@ -172,7 +145,7 @@ function setAudioSource(chooseSource, i) {
         chooseSource.buffer = buffer;
     } else {
         // Load asynchronously
-        var url = fileList[i]+".wav";
+        var url = tab[i]+".wav";
 
         var request = new XMLHttpRequest();
         request.open("GET", url, true);
@@ -188,7 +161,7 @@ function setAudioSource(chooseSource, i) {
                 },
 
                 function(buffer) {
-                    // console.log("Error decoding audio source data!");
+                    console.log("Error decoding audio source data!");
                 }
             );
         }
@@ -222,8 +195,8 @@ function setSourceBuffer(buffer) {
 *
 */
 
-function init(){
-
+jeu1.prototype.init = function(){
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	bufferList = new Array(fileList.length);
 	for (var i = 0; i< fileList.length; i++){
 		bufferList = 0;
@@ -302,7 +275,7 @@ function init(){
 	dist = dist * dist;
 	//Pour que la reverb ne soit jamais à 0
 	dist = dist + 0.05;
-	// console.log("Dist: " + dist);
+	console.log("Dist: " + dist);
 
 	wetGainNodeEarly.gain.value = dist;
 	wetGainNodeGlobal.gain.value = dist;
@@ -312,11 +285,11 @@ function init(){
 	//Positionne le panner en x:50 y:100
 	panner.setPosition(obstaclex, obstacley, obstaclez);
 
-	// console.log(panner);
+	console.log(panner);
 	source.playbackRate.value = 1.0;
-	// console.log(source);
+	console.log(source);
 	//Chargement du son initial
-	setAudioSource(source, 0);
+	setAudioSource(source, 0, fileList, context);
 	//Incrément pour le premier obstacle
 	nbObstacles++;
 
@@ -328,16 +301,17 @@ function init(){
 	source.onended = function(){
 		relanceSon();
 	};
-	// console.log(source);
-	ctx.drawImage(imgperso, perso.x, perso.y);
+	console.log(source);
 
-	interval = window.setInterval(animation, 150);
+	interval = window.setInterval(jeu1.animation, 150);
+	//Event listener keyboard
+	window.addEventListener("keydown", verifKey1, false);
 	
 
 } //fin init
 
 function relanceSon(){
-	if(nbObstacles >= 10 || vie == 0){
+	if(nbObstacles >= 10 || collision == true){
 		clearInterval(interval);
 		
 	}else{
@@ -351,7 +325,7 @@ function relanceSon(){
 		panner.setPosition(obstaclex, obstacley, 0);
 
 		//On choisi le son à jouer
-		setAudioSource(source, 0);
+		setAudioSource(source, 0, fileList, context);
 
 		//On recupere l'heure courante
 		var currentTime = context.currentTime;
@@ -361,29 +335,28 @@ function relanceSon(){
 	 	//On tire un nb aleatoirement pour savoir quel deplacement aura l'obstacle. On choisi un nb entre 0 - 30 qu'on /10 pour avoir 0 || 1 || 3
 		var alea = Math.floor((Math.random() * 30));
 		alea = Math.floor((alea/10));
-		// console.log("alea: "+alea);
+		console.log("alea: "+alea);
 
 		//On affecte les valeurs de déplacement
 		depX = tabDeplacement[alea][0];
 		depY = tabDeplacement[alea][1];
 
-	 	if (vie != 0){
+	 	if (collision == false){
 	 		source.onended = function(){
 	 			relanceSon();
 	 		}
 	 	}
-	 	//initailisation du compteur pour les vies
-	 	i = 0;
+
 	 	nbObstacles ++;
 	}
 
- 	// console.log(nbObstacles);
- 	// console.log(panner);
- 	// console.log("relanceSon");
+ 	console.log(nbObstacles);
+ 	console.log(panner);
+ 	console.log("relanceSon");
 }
 
 function animation(){
-	// console.log("x: " + obstaclex + ", y: " + obstacley + ", z: " +obstaclez);
+	console.log("x: " + obstaclex + ", y: " + obstacley + ", z: " +obstaclez);
 	//On déplace l'obstacle
 	panner.setPosition(obstaclex, obstacley, obstaclez);
 	obstaclex += depX;
@@ -407,41 +380,17 @@ function animation(){
 	dist = dist * dist;
 	//Pour que la reverb ne soit jamais à 0
 	dist = dist + 0.05;
-	// console.log("Dist: " + dist);
+	console.log("Dist: " + dist);
 
 	wetGainNodeEarly.gain.value = dist;
 	wetGainNodeGlobal.gain.value = dist;
 	dryGainNodeEarly.gain.value = 1-dist;
 	dryGainNodeGlobal.gain.value = 1-dist;
 
-	// console.log("wet gain early: " + wetGainNodeEarly.gain.value);
-	// console.log("wet gain global: " + wetGainNodeGlobal.gain.value);
-	// console.log("dry gain early: " + dryGainNodeEarly.gain.value);
-	// console.log("dry gain global: " + dryGainNodeGlobal.gain.value);
-	ctx.clearRect(0,0, canvas.width, canvas.height);
-
-	ctx.drawImage(imgperso, perso.x, perso.y);
-
-	// vies
-	// gestion des vies
-	if (vie == 3) {
-		ctx.drawImage(coeur, 580, 30);
-		ctx.drawImage(coeur, 640, 30);
-		ctx.drawImage(coeur, 700, 30);
-	}
-
-	if (vie == 2) {
-		ctx.drawImage(coeur, 640, 30);
-		ctx.drawImage(coeur, 700, 30);
-	}
-
-	if (vie == 1) {
-		ctx.drawImage(coeur, 700, 30);
-	}
-
-	if (vie == 0) {
-		
-	}
+	console.log("wet gain early: " + wetGainNodeEarly.gain.value);
+	console.log("wet gain global: " + wetGainNodeGlobal.gain.value);
+	console.log("dry gain early: " + dryGainNodeEarly.gain.value);
+	console.log("dry gain global: " + dryGainNodeGlobal.gain.value);
 }
 
 //Animation
@@ -454,72 +403,49 @@ function animation(){
 
 *******/
 function testCollision(){
+
 	//Collision zone gauche
 	if(obstaclex <= (zoneGauche.x + zoneGauche.taille) && obstacley <= zoneGauche.y && listenerx <= (zoneGauche.x + zoneGauche.taille) && listenery == zoneGauche.y) {
-		// console.log(obstaclex);
-		// console.log(obstacley);
-		// console.log(listenerx);
-		// console.log(listenery);
-		// console.log("Collision zone gauche");
-		//collision = true;
-		//On incrémente le compteur pour tester les collisons afin d'effectuer une seule fois l'update vie
-		i++;
-		updateVie(i);
+		console.log(obstaclex);
+		console.log(obstacley);
+		console.log(listenerx);
+		console.log(listenery);
+		console.log("Collision zone gauche");
+		collision = true;
+		clearInterval(interval);
 
-		if (vie == 0) {
-			clearInterval(interval);
-			//Ecran fin de jeu
-			finJeuLose();
-		}
+		//Ecran fin de jeu
+		finJeuLose();
 	}
 
 	//Collision zone Milieu
 	if(obstaclex == (zoneMilieu.x) && obstacley <= zoneMilieu.y && listenerx == (zoneMilieu.x) && listenery <= zoneMilieu.y) {
-		// console.log(obstaclex);
-		// console.log(obstacley);
-		// console.log(listenerx);
-		// console.log(listenery);
-		// console.log("Collision zone milieu");
-		//collision = true;
-		//On incrémente le compteur pour tester les collisons afin d'effectuer une seule fois l'update vie
-		i++;
-		updateVie(i);
-		
-		if (vie == 0) {
-			clearInterval(interval);
-			//Ecran fin de jeu
-			finJeuLose();
-		}
+		console.log(obstaclex);
+		console.log(obstacley);
+		console.log(listenerx);
+		console.log(listenery);
+		console.log("Collision zone milieu");
+		collision = true;
+		clearInterval(interval);
+
+		//Ecran fin de jeu
+		finJeuLose();
 	}
 
 	//Collision zone droite
 	if(obstaclex >= zoneDroite.x  && obstacley <= zoneDroite.y && listenerx >= zoneDroite.x && listenery == zoneDroite.y) {
-		// console.log(obstaclex);
-		// console.log(obstacley);
-		// console.log(listenerx);
-		// console.log(listenery);
+		console.log(obstaclex);
+		console.log(obstacley);
+		console.log(listenerx);
+		console.log(listenery);
 		console.log("Collision zone droite");
-		//collision = true;
-		//console.log("zone droite: "+i);
-		//On incrémente le compteur pour tester les collisons afin d'effectuer une seule fois l'update vie
-		i++;
-		updateVie(i);
+		collision = true;
+		clearInterval(interval);
 
-		if (vie == 0) {
-			clearInterval(interval);
-			//Ecran fin de jeu
-			finJeuLose();
-		}
+		//Ecran fin de jeu
+		finJeuLose();
 	}
-
 	
-	
-}
-//Permet de changer la valeur de vie une seule fois
-function updateVie(i){
-	if (i == 1){
-		vie--;
-	}
 }
 /******
 
@@ -532,7 +458,8 @@ function finJeuLose(){
 	/*context.clearRect(0, 0, canvas.width, canvas.height);
 	context.font = "bold 16px Arial";
  	context.fillText("Vous avez perdu !", canvas.width/2, canvas.height/2);*/
- 	// console.log("Jeu Lose");
+ 	console.log("Jeu Lose");
+ 	window.removeEventListener("keydown", verifKey1);
 }
 
 function finJeuWin(){
@@ -540,7 +467,8 @@ function finJeuWin(){
 	context.font = "bold 16px Arial";
  	context.fillText("Félicitiation vous avez évité tous les obstacles !", 10, canvas.height/2);*/
  	//On arrete les intervals
- 	// console.log("Jeu Win");
+ 	console.log("Jeu Win");
+ 	window.removeEventListener("keydown", verifKey1);
 }
 
 /*******
@@ -548,15 +476,19 @@ function finJeuWin(){
 	KEYBOARD
 
 *******/
-window.onkeydown = function(event){
+/*window.onkeydown = function(event){
 	//Transforme keyCode en String correspondant
 	touche = String.fromCharCode(event.keyCode);
-	// console.log(touche);
+	console.log(touche);
 
 	verifKey1()
-}
+}*/
+
 
 function verifKey1(){
+	//Transforme keyCode en String correspondant
+	touche = String.fromCharCode(event.keyCode);
+	console.log(touche);
 	switch(touche){
 		case "D":
 		//On verifie la position du listener avant de le deplacer
@@ -564,8 +496,6 @@ function verifKey1(){
 				listenerx -= 22;
 				console.log(listenerx);
 				listener.setPosition(listenerx, listenery, listenerz);
-				perso.x -= perso.dep;
-				console.log(perso.x);
 			}
 			break;
 		case "F":
@@ -574,8 +504,6 @@ function verifKey1(){
 				listenerx += 22;
 				console.log(listenerx);
 				listener.setPosition(listenerx, listenery, listenerz);
-				perso.x += perso.dep;
-				console.log(perso.x);
 			}
 			break;
 		default:

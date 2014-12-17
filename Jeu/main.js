@@ -17,6 +17,8 @@ window.onload = function(){
 	    alert("Impossible de récupérer le context du canvas");
 	    return;
 	}
+	var background = document.getElementById("bg");
+	background.style.visibility = "hidden";
 	//Affichages des instructions pour le choix du modes
 	afficherMode();
 
@@ -30,6 +32,7 @@ window.onload = function(){
 function afficherMode(){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.font = "bold 16px Arial";
+	ctx.textAlign = 'center';
  	ctx.fillText("Choisissez un mode de jeu", canvas.width/2, canvas.height/2);
 
  	ctx.fillText("D: 1 joueur", canvas.width/3, canvas.height/1.5);

@@ -17,7 +17,7 @@ if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudio
     window.webkitAudioContext = AudioContext;
 
 // init() once the page has finished loading.
-//window.onload = init;
+window.onload = init;
 
 var context;
 var buffer;
@@ -329,6 +329,7 @@ function init(){
 		relanceSon();
 	};
 	// console.log(source);
+
 	ctx.drawImage(imgperso, perso.x, perso.y);
 
 	interval = window.setInterval(animation, 150);
