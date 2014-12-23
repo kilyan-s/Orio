@@ -553,7 +553,7 @@ window.onkeydown = function(event){
 	touche = String.fromCharCode(event.keyCode);
 	// console.log(touche);
 
-	verifKey1()
+	//verifKey1()
 }
 
 function verifKey1(){

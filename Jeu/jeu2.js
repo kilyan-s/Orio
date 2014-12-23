@@ -1,5 +1,6 @@
 var jeu2 = function(){};
 
+
 jeu2.prototype.init = function() {
 	//ctx.clearRect(0, 0, canvas.width, canvas.height);
 	//SONS
@@ -25,9 +26,35 @@ jeu2.prototype.init = function() {
 	ordreSons.push(rand);
 	//Incrémente nbSons
 	nbSons++;
-	//Lance le 2e son
-	relanceSon();
 
+	/*******
+	
+		SONS & ROUTING
+
+	*******/
+	//Création du context audio
+	context = new webkitAudioContext();
+	//Création source & panner & listener
+	source = context.createBufferSource();
+	panner = context.createPanner();
+	listener = context.listener;
+	//Position panner
+	panner.setPosition(50, 50, 0);
+	//Position listener
+	listener.setPosition(50, 10, 0);
+	//Routing
+	source.connect(panner);
+	panner.connect(context.destination);
+	//Chargement du son
+	setAudioSource(source,0);
+	//Lancement du son
+	source.start();
+	//Lorsque le son est fini on joue le suivant
+	source.onended = function() {
+		//Joue le son suivant
+		relanceSon();
+	}
+	
 	//Evt clavier
 	//window.addEventListener("keydown", keyboardJeu2, false );
 
@@ -43,10 +70,27 @@ jeu2.prototype.init = function() {
 			//On ajoute l'index du son au tab
 			ordreSons.push(rand);
 			console.log(ordreSons);
+
+			/*****
+				SONS
+			*****/
+			//On créé un new audio buffer source car on ne peut lancer start qu'une fois
+			source = context.createBufferSource();
+			//On reconnecte la source au panner
+			source.connect(panner);
+
+			//Choisi le son à jouer
+			setAudioSource(source, 0);
+			//On recupere l'heure courante
+			var currentTime = context.currentTime;
+			//On laisse un délai d'0.2sec avant de jouer le son
+		 	source.start(currentTime + 0.2);
 			//Incrément nbSons pour limiter le jeu ne nb sons
 			nbSons++;
 			if(nbSons < 6){
-				relanceSon();
+				source.onended = function(){
+					relanceSon();
+				}
 			}
 		}
 		
@@ -73,7 +117,8 @@ jeu2.prototype.init = function() {
 *******/
 	function verifSequence() {
 		var verification;
-		console.log("verif sequence");
+		// console.log("verif sequence");
+		console.log(ordreSons);
 		console.log(ordreTouches);
 		if(ordreSons.length != ordreTouches.length){
 			console.log("Pas meme longeur");
@@ -81,13 +126,15 @@ jeu2.prototype.init = function() {
 		}
 
 		for (var i = 0; i<ordreSons.length; i++){
-			console.log(ordreSons[i]+" = "+ordreTouches[i]);
+			//console.log(ordreSons[i]+" = "+ordreTouches[i]);
 			if(ordreSons[i] == ordreTouches[i]){
-
 				verification = true;
 			}
 			else{
 				verification = false;
+				console.log("Séquence non valide");
+				return;
+
 			}
 		}
 		if(verification == true){
