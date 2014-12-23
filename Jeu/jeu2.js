@@ -133,7 +133,7 @@ jeu2.prototype.init = function() {
 			else{
 				verification = false;
 				console.log("Séquence non valide");
-				return;
+				return;	
 
 			}
 		}
@@ -161,22 +161,106 @@ jeu2.prototype.init = function() {
 		else{
 			switch(touche){
 				case "E":
+					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
+					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(0);
+					//Création buffer source
+					source = context.createBufferSource();
+					//Connect la source au panner
+					source.connect(panner);
+					//On choisit le son à jouer
+					setAudioSource(source, 0);
+					//On lance le son
+					source.start();
+					//lorsque le son est fini on remet le listener d'evt
+					source.onended = function(){
+						window.addEventListener("keydown", keyboardJeu2, false);	
+					}
 					break;
 				case "R":
+					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
+					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(1);
+					//Création buffer source
+					source = context.createBufferSource();
+					//Connect la source au panner
+					source.connect(panner);
+					//On choisit le son à jouer
+					setAudioSource(source, 0);
+					//On lance le son
+					source.start();
+					//lorsque le son est fini on remet le listener d'evt
+					source.onended = function(){
+						window.addEventListener("keydown", keyboardJeu2, false);	
+					}
 					break;
 				case "T":
+					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
+					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(2);
+					//Création buffer source
+					source = context.createBufferSource();
+					//Connect la source au panner
+					source.connect(panner);
+					//On choisit le son à jouer
+					setAudioSource(source, 0);
+					//On lance le son
+					source.start();
+					//lorsque le son est fini on remet le listener d'evt
+					source.onended = function(){
+						window.addEventListener("keydown", keyboardJeu2, false);	
+					}
 					break;
 				case "D":
+					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
+					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(3);
+					//Création buffer source
+					source = context.createBufferSource();
+					//Connect la source au panner
+					source.connect(panner);
+					//On choisit le son à jouer
+					setAudioSource(source, 0);
+					//On lance le son
+					source.start();
+					//lorsque le son est fini on remet le listener d'evt
+					source.onended = function(){
+						window.addEventListener("keydown", keyboardJeu2, false);	
+					}
 					break;
 				case "F":
+					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
+					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(4);
+					//Création buffer source
+					source = context.createBufferSource();
+					//Connect la source au panner
+					source.connect(panner);
+					//On choisit le son à jouer
+					setAudioSource(source, 0);
+					//On lance le son
+					source.start();
+					//lorsque le son est fini on remet le listener d'evt
+					source.onended = function(){
+						window.addEventListener("keydown", keyboardJeu2, false);	
+					}
 					break;
 				case "G":
+					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
+					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(5);
+					//Création buffer source
+					source = context.createBufferSource();
+					//Connect la source au panner
+					source.connect(panner);
+					//On choisit le son à jouer
+					setAudioSource(source, 0);
+					//On lance le son
+					source.start();
+					//lorsque le son est fini on remet le listener d'evt
+					source.onended = function(){
+						window.addEventListener("keydown", keyboardJeu2, false);	
+					}
 					break;
 				default:
 					return;
