@@ -318,7 +318,7 @@ function init(){
 	//Chargement du son initial
 	setAudioSource(source, 0);
 	//Incrément pour le premier obstacle
-	nbObstacles++;
+	//nbObstacles++;
 
 	//Récupération de l'heure courrante
 	var currentTime = context.currentTime;
@@ -338,8 +338,9 @@ function init(){
 } //fin init
 
 function relanceSon(){
-	if(nbObstacles >= 10 || vie == 0){
+	if(nbObstacles >= 10 && vie != 0){
 		clearInterval(interval);
+		finJeuWin();
 		
 	}else{
 		//On créé un new audio buffer source car on ne peut lancer start qu'une fois
@@ -368,6 +369,7 @@ function relanceSon(){
 		depX = tabDeplacement[alea][0];
 		depY = tabDeplacement[alea][1];
 
+		//Si il reste des vies on relance le son
 	 	if (vie != 0){
 	 		source.onended = function(){
 	 			relanceSon();
@@ -441,7 +443,9 @@ function animation(){
 	}
 
 	if (vie == 0) {
-		
+		clearInterval(interval);
+		finJeuLose();
+		// ctx.fillText("Vous avez perdu !", canvas.width/2, canvas.height/2);
 	}
 }
 
@@ -467,11 +471,11 @@ function testCollision(){
 		i++;
 		updateVie(i);
 
-		if (vie == 0) {
+		/*if (vie == 0) {
 			clearInterval(interval);
 			//Ecran fin de jeu
 			finJeuLose();
-		}
+		}*/
 	}
 
 	//Collision zone Milieu
@@ -486,11 +490,11 @@ function testCollision(){
 		i++;
 		updateVie(i);
 		
-		if (vie == 0) {
+		/*if (vie == 0) {
 			clearInterval(interval);
 			//Ecran fin de jeu
 			finJeuLose();
-		}
+		}*/
 	}
 
 	//Collision zone droite
@@ -506,11 +510,11 @@ function testCollision(){
 		i++;
 		updateVie(i);
 
-		if (vie == 0) {
+		/*if (vie == 0) {
 			clearInterval(interval);
 			//Ecran fin de jeu
 			finJeuLose();
-		}
+		}*/
 	}
 
 	
@@ -520,6 +524,8 @@ function testCollision(){
 function updateVie(i){
 	if (i == 1){
 		vie--;
+		//A chaque collision on décrémente le nb d'obstacle evité
+		nbObstacles--;
 	}
 }
 /******
@@ -529,19 +535,22 @@ function updateVie(i){
 *******/
 function finJeuLose(){
 	//Si le joueur touche un obstacle on décrémente le score car l'obastacle touché ne doit pas être compatabilisé
-	nbObstacles--;
-	/*context.clearRect(0, 0, canvas.width, canvas.height);
-	context.font = "bold 16px Arial";
- 	context.fillText("Vous avez perdu !", canvas.width/2, canvas.height/2);*/
- 	// console.log("Jeu Lose");
+	// nbObstacles--;
+	/*ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.font = "bold 16px Arial";*/
+	ctx.textAlign = 'center';
+ 	ctx.fillText("Vous avez perdu !", canvas.width/2, canvas.height/2);
+ 	console.log("Jeu Lose");
+ 	console.log(nbObstacles);
 }
 
 function finJeuWin(){
-	/*context.clearRect(0, 0, canvas.width, canvas.height);
-	context.font = "bold 16px Arial";
- 	context.fillText("Félicitiation vous avez évité tous les obstacles !", 10, canvas.height/2);*/
+	/*ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.font = "bold 16px Arial";*/
+	ctx.textAlign = 'center';
+ 	ctx.fillText("Félicitiation vous avez évité tous les obstacles !", canvas.width/2, canvas.height/2);
  	//On arrete les intervals
- 	// console.log("Jeu Win");
+ 	console.log("Jeu Win");
 }
 
 /*******

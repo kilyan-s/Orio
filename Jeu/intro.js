@@ -14,7 +14,15 @@ introNarration.prototype.init = function(){
 		bufferList = 0;
 	}
 
+	//On vide le canvas
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillText("Première partie de narration", canvas.width/2, canvas.height/2);
 
+	setTimeout(function(){
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.fillText("Lancement du premier jeu", canvas.width/2, canvas.height/2);
+		ctx.fillText("L'assemblage s'arrête pour l'instant ici", canvas.width/2, 2*canvas.height/3);
+	}, 3000)
 	//Passer au jeu 1
 	var jeu = new jeu1();
 	jeu.init();

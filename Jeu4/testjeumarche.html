@@ -1,0 +1,580 @@
+<!--
+Copyright 2010, Google Inc.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+    * Neither the name of Google Inc. nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>
+</title>
+
+
+<!-- Slider stuff -->
+<script type="text/javascript" src="lib/events.js"></script>
+
+<link rel="stylesheet" type="text/css" href="style/simple.css" />
+
+<!-- Our javascript code -->
+<script type="text/javascript">
+
+window.onkeydown = showKeyCode;
+
+// Temporary patch until all browsers support unprefixed context.
+if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudioContext'))
+    window.webkitAudioContext = AudioContext;
+
+// init() once the page has finished loading.
+window.onload = init;
+
+// Je déclare toutes les variables en dehors des fonctions
+var context;
+var buffer;
+// pour la reverb
+var convolver;
+// spatialisation de la voix
+var panner;
+// spatialisation neon
+var pannerneon;
+var pannerfrigo;
+var pannereau;
+var pannertelephone;
+var pannerchat;
+// Source pour la voix
+var source;
+var sourceeau;
+var sourcefrigo;
+var sourcetelephone;
+var sourceneon;
+var sourcechat;
+// Gain reverb
+var dryGainNode;
+// Gain sans reverb
+var wetGainNode;
+var listener;
+var lowFilter;
+
+// Les coordonnées du listener
+var listenerx = 0;
+var listenery = 0;
+var listenerz = 0;
+
+// les coordonnées du panner, de la voix, elles sont aléatoires
+var x = Math.floor(Math.random() * (100) - 50);
+var y = Math.floor(Math.random() * (100) - 50);
+var z = -4;
+
+// Boolean pour savoir si le joueur a trouvé l'objet
+var trouve = false;
+
+// le numéro du son qui vient d'être joué
+var numSon = 0;
+
+var hilightedElement = 0;
+var bufferList;
+
+var fileCount = 14;
+var fileList = [
+    "sounds/jeu4/gen1.wav",
+    "sounds/jeu4/gen2.wav",
+    "sounds/jeu4/gen3.wav",
+    "sounds/jeu4/gen4.wav",
+    "sounds/jeu4/derriereloin.wav",
+    "sounds/jeu4/derriereproche.wav",
+    "sounds/jeu4/devantloin.wav",
+    "sounds/jeu4/devantproche.wav",
+    "sounds/jeu4/toutproche.wav",
+    "sounds/jeu4/trouve.wav",
+    "sounds/jeu4/eau.wav",
+    "sounds/jeu4/frigo.wav",
+    "sounds/jeu4/neon.wav",
+    "sounds/jeu4/telephone.wav",
+    "sounds/jeu4/chat.wav",
+];
+
+
+
+var kInitialReverbLevel = 0.6;
+
+
+
+// Permet de changer le type de reverb
+function setReverbImpulseResponse(url) {
+    // Load impulse response asynchronously
+    var request = new XMLHttpRequest();
+    request.open("GET", url, true);
+    request.responseType = "arraybuffer";
+
+    request.onload = function() { 
+        context.decodeAudioData(
+            request.response,
+            function(buffer) {
+                convolver.buffer = buffer;
+            },
+
+            function(buffer) {
+                console.log("Error decoding impulse response!");
+            }
+        );
+    }
+
+    request.send();
+}
+
+
+// Permet de changer le son de la source
+function setAudioSource(chooseSource, i) {
+    var buffer = bufferList[i];
+
+    // See if we have cached buffer
+    if (buffer) {
+        chooseSource.buffer = buffer;
+    } else {
+        // Load asynchronously
+        var url = fileList[i];
+
+        var request = new XMLHttpRequest();
+        request.open("GET", url, true);
+        request.responseType = "arraybuffer";
+
+        request.onload = function() { 
+            context.decodeAudioData(
+                request.response,
+                function(buffer) {
+                    mixToMono(buffer);
+                    chooseSource.buffer = buffer;
+                    bufferList[i] = buffer;  // cache it
+                },
+
+                function(buffer) {
+                    console.log("Error decoding audio source data!");
+                }
+            );
+        }
+
+        request.send();
+    }
+}
+
+// Permet de convertir les sons qui sont en stéréo en mono, en effet, la spatialisation ne marche bien qu'avec des sons en mono
+function mixToMono(buffer) {
+    if (buffer.numberOfChannels == 2) {
+        var pL = buffer.getChannelData(0);
+        var pR = buffer.getChannelData(1);
+        var length = buffer.length;
+        
+        for (var i = 0; i < length; ++i) {
+            var mono = 0.5 * (pL[i] + pR[i]);
+            pL[i] = mono;
+            pR[i] = mono;
+        }
+    }
+}
+
+
+
+
+
+// fonctions qui permettent de faire déplacer le listener, à refaire mieux ;)
+function gauche() {
+	listenerx -= 1;
+	listener.setPosition(listenerx, listenery, listenerz);
+}
+
+function droite() {
+	listenerx += 1;
+	listener.setPosition(listenerx, listenery, listenerz);
+}
+
+function arriere() {
+	listenery -= 1;
+	listener.setPosition(listenerx, listenery, listenerz);
+}
+
+function avant() {
+	listenery += 1;
+	listener.setPosition(listenerx, listenery, listenerz);
+}
+
+
+
+
+
+function highlightElement(object) {
+    if (hilightedElement) hilightedElement.style.backgroundColor = "white";
+    hilightedElement = object;
+
+    object.style.backgroundColor = "green";
+}
+
+
+
+function setSourceBuffer(buffer) {
+    source.buffer = buffer;
+}
+
+/**
+ * Start panning demo
+ */
+ function init() {
+
+	 
+	 // Création des canvas, perso je connais pas bien cette partie
+
+	  // Truc pour charger les fichiers sons
+     bufferList = new Array(fileCount);
+     for (var i = 0; i < fileCount; ++i) {
+         bufferList[i] = 0;
+     }
+     
+
+     // Initialize audio
+     context = new webkitAudioContext();
+     
+     // Initialisation de la personne qui écoute
+	 listener = context.listener;
+	 listener.setPosition(listenerx, listenery, listenerz);
+	
+	 // Initialisation des sources
+     source = context.createBufferSource();
+     sourceeau = context.createBufferSource();
+     sourcefrigo = context.createBufferSource();
+     sourcetelephone = context.createBufferSource();
+     sourceneon = context.createBufferSource();
+     sourcechat = context.createBufferSource();
+     
+     // Sert pour la reverb, pour déverser un son dans un canal sans reverb et dans un autre canal avec reverb, permet de doser le niveau de reverb
+     dryGainNode = context.createGain();
+     wetGainNode = context.createGain();
+     
+     // permet la spatialisation des sources
+     panner = context.createPanner();
+     pannereau = context.createPanner();
+     pannerchat = context.createPanner();
+     pannerfrigo = context.createPanner();
+     pannerneon = context.createPanner();
+     pannertelephone = context.createPanner();
+	 
+	 // On ne l'utilise pas mais je le laisse, car sinon çà créé la merde lors des connexions des différents éléments audio
+     lowFilter = context.createBiquadFilter();
+     lowFilter.frequency.value = 22050.0;
+     lowFilter.Q.value = 5.0;
+	 
+	 
+	 // sert à créer une reverb à convolution
+     convolver = context.createConvolver();
+	 
+	 
+	 // Connexion des sons de la personne
+     // Connect audio processing graph
+     source.connect(panner);
+     // Connect dry mix, connect un son sans passer par la reverb
+     panner.connect(dryGainNode);
+     dryGainNode.connect(context.destination);
+     // Connect wet mix, connecte un son en passant par la reverb
+     panner.connect(convolver);
+     convolver.connect(wetGainNode);
+     wetGainNode.connect(context.destination);
+     // On choisit le niveau de reverb que l'on veut mettre ici
+     wetGainNode.gain.value = kInitialReverbLevel;
+     
+     	 // che pas
+     source.playbackRate.value = 1.0;
+	 // positionnement de la source je suppose
+     panner.setPosition(x, y, z);
+     // Load up initial sound
+     setAudioSource(source, 0);
+     var currentTime = context.currentTime;
+     source.start(currentTime + 0.020);
+     source.onended = function() {
+		 relanceSon();
+	}
+     
+     
+     lanceSonAmbiance(sourceeau, pannereau, 30, 30, 0, 10);
+     lanceSonAmbiance(sourcefrigo, pannerfrigo, 30, 30, -10, 11);
+     lanceSonAmbiance(sourcetelephone, pannertelephone, -60, -100, 0, 13);
+     //lanceSonAmbiance(sourceneon, pannerneon, 0, 20, 200, 12);
+     lanceSonAmbiance(sourcechat, pannerchat, -40, 100, 100, 14);
+
+
+
+	 // On choisit la réponse impulsive pour la reverb, selon cette réponse on aura des reverbs différentes
+     setReverbImpulseResponse('impulse-responses/spatialized3.wav');
+	 
+
+ }
+ 
+ 
+ // Lance les sons ambiances
+ function lanceSonAmbiance(source, panner, x, y, z, son){
+	 //Je m'occupe du son de l'eau, je créé des connexions pour passer par un autre panner  &&&&&&&&&&&&&& 
+     source.connect(panner);
+     // Connect dry mix, connect un son sans passer par la reverb
+     panner.connect(dryGainNode);
+     // Connect wet mix, connecte un son en passant par la reverb
+     panner.connect(convolver);
+     // On choisit le niveau de reverb que l'on veut mettre ici
+     panner.connect(convolver);
+
+     
+     // Charger et lancer le son de l'eau
+     setAudioSource(source, son);
+     panner.setPosition(x, y, z);
+     source.loop = true;
+     source.playbackRate.value = 1.0;
+     var currentTime = context.currentTime;
+     source.start(currentTime + 0.020);
+	 
+ }
+ 
+ function relanceSon(){
+ 	
+ 	// Création d'un nouveau buffer pour la source, c'est obligé car un buffer ne peut etre lancé qu'une fois....
+ 	source = context.createBufferSource();
+ 	// On conncete au circuit
+	source.connect(panner);
+	
+	//Code pour déterminer quel son lancer
+	
+	// Si le listener est devant la source
+	if (listenery-y > -10 && listenery-y < -5 ){
+		setAudioSource(source, 6);
+	}
+	
+	// Si le listener est devant la source très proche
+	if (listenery-y > -5 && listenery-y < -1 ){
+		setAudioSource(source, 7);
+	}
+	
+	// Si le listener est derriere la source très proche
+	if (listenery-y > 1 && listenery-y < 5 ){
+		setAudioSource(source, 5);
+	}
+	
+	// Si le listener est derriere la source 
+		if (listenery-y > 5 && listenery-y < 10 ){
+		setAudioSource(source, 4);
+	}
+	
+	// Si le listener est sur la source 
+		if (trouve==true){
+		setAudioSource(source,9);
+	}
+	
+	else{
+	
+		// on pioche un nombre aléatoire enter 0 et 3
+		var nb = Math.floor(Math.random() * (3));
+		setAudioSource(source, nb);
+	}
+	
+	// On récupère le temps courant et on lance le son avec 2sec de retard pour espacer les différents sons
+ 	var currentTime = context.currentTime;
+ 	source.start(currentTime + 1.5);
+	
+	// Si le joueur n'a pas trouvé la source, on relance un son
+	if (trouve==false){
+		source.onended = function() {
+			 relanceSon();
+		}
+	}
+	
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ function showKeyCode(e) {
+ 	
+ 	
+ 	console.log (listenerx);
+ 	console.log (listenery);
+ 	console.log (x);
+ 	console.log (y);
+ 	console.log(trouve);
+ 	
+ 	var touche = e.keyCode;
+ 	
+ 	if (event.defaultPrevented) {
+    	return; // Should do nothing if the key event was already consumed.
+	}
+ 
+	// Si le joueur n'a pas trouvé le monsieur on le fait bouger, sinon on ne fait rien
+	if (trouve == false){
+	
+		switch (touche) {
+		    case 37:
+		      gauche();
+		      break;
+		    case 38:
+		      avant();
+		      break;
+		    case 39:
+		      droite();
+		      break;
+		    case 40:
+		      arriere();
+		      break;
+		    default:
+		      return; // Quit when this doesn't handle the key event.
+		}
+		
+		// Consume the event for suppressing "double action".
+  event.preventDefault();
+	}
+	
+	 	
+ 	// Si le joueur se trouve sur la bonne case on arrete le jeu
+ 	if (listenery == y && listenerx == x){
+	 	trouve = true;
+ 	}
+}
+
+
+</script>
+</head>
+
+<body onkeydown="showKeyCode(event);" >
+
+
+<h1>Top View ---------------- Front View </h1>
+<canvas id="canvasID" width="400" height="400" style="border: 10px inset blue;">
+</canvas>
+
+<canvas id="canvasElevationID" width="400" height="400" style="border: 10px inset blue;">
+</canvas>
+
+<div id="info">
+</div>
+
+<br>
+
+<!-- Sliders and other controls will be added here -->
+<div id="controls"> </div>
+
+<br><br>
+<div style="position:relative; height:350px;">
+	
+<div style="position:absolute; top:0; left:0; width:250px; border: 2px inset blue;">
+<h1>Sounds</h1>
+<ul>
+
+
+</div>
+
+
+<div id="acoustic-spaces" style="position:absolute; top:0; left:300px; width:50%;  border: 2px inset blue;">
+<h1>Acoustic Spaces</h1>
+
+<ul>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/s3_r4_bd.wav');">
+  Binaural</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/cardiod-35-10-spread.wav');">
+Warehouse Cardiod-35-10-spread</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/cardiod-rear-35-10.wav');">
+Warehouse Cardiod-rear-35-10</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/super-ceiling-35-10/super-ceiling-35-10.wav');">
+Warehouse Super-ceiling-35-10</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/omni-35-10.wav');">
+Warehouse Omni-35-10</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/cardiod-true-stereo-15-8.wav');">
+Warehouse True-Stereo-15-8</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/spatialized1.wav');">
+spatialized 1 (huge spacious)</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/spatialized2.wav');">
+spatialized 2 (outside)</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/spatialized3.wav');">
+spatialized 3 (outside)</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/spatialized4.wav');">
+spatialized 4 (huge spacious)</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/spatialized5.wav');">
+spatialized 5 (backwards)</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/spatialized6.wav');">
+spatialized 6 (cosmic)</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/spatialized7.wav');">
+spatialized 7 (dark cathedral)</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/spatialized8.wav');">
+spatialized 8 (medium open)</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/spatialized9.wav');">
+spatialized 9 (medium open)</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/echo-chamber.wav');">
+Echo Chamber</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/noise-spreader1.wav');">
+Noise Spreader</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/peculiar-backwards.wav');">
+Fluttery</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/sifter.wav');">
+Sifter</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/wildecho.wav');">
+Wild Echo</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/backslap1.wav');">
+backslap</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/tim-stretch2.wav');">
+tim-stretch2</li>
+
+<li onmousedown="setReverbImpulseResponse('impulse-responses/tim-warehouse-stretch1.wav');">
+tim-warehouse-stretch1.wav</li>
+
+
+
+
+</ul>
+
+</div>
+</div>
+
+</body>
+</html>
