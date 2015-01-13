@@ -1,0 +1,60 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720
+
+\f0\fs24 \cf0 Le son c\'92est le son: jeu3pfe_final.wav (dans assets)\
+\
+Il y a un seul son\
+\
+Il y a 5 EQ, 4 qui permettent de cacher les fr\'e9quences et l\'92un qui enl\'e8ve les fr\'e9quences plus aigues que celle qui doit \'eatre trouv\'e9e:\
+\
+4 \'ab\'a0peak\'a0\'bb et 1 \'ab\'a0lowpass\'a0\'bb\
+\
+Le but du jeu est de trouver chaque fr\'e9quence l\'92une apr\'e8s l\'92autre.\
+\
+Afin de trouver une fr\'e9quence il faut bouger la fr\'e9quence d\'92action du filtre. Par exemple, pour le son 1, le son se trouve \'e0 86hz. Lorsque le filtre sera sur 86hz l\'92utilisateur entendra la fr\'e9quence, lorqu\'92il est \'e0 76Hz le joueur n\'92entendra pas la fr\'e9quence. LE but pour le joueur est donc de bouger le filtre de 76hz \'e0 96hz et de remarquer que la fr\'e9quence est situ\'e9e \'e0 86hz (l\'e0 il devra relever le crochet).\
+\
+Au d\'e9but le lowpass frequency est \'e0 100hz afin de cacher les autres fr\'e9quences\
+\
+\
+1er \'e9tape :\
+eq1 : 86.6 Hz (r\'e9ponse entre 85hz et 87hz)\
+bouger entre 76hz et 96hz\
+lowpass frequency 100hz\
+gain value : 10\
+\
+A chaque changement d\'92\'e9tape :\
+\'97> remettre le gain de cette EQ \'e0 0 une fois le son trouv\'e9\
+\'97> changer la fr\'e9quence du lowpass\
+\'97> remettre le gain du prochain EQ \'e0 la valeur indiqu\'e9e ensuite\
+\
+\
+2eme \'e9tape\
+eq2 : 132 Hz (r\'e9ponse entre 131hz et 133Hz)\
+bouger entre 122hz et 142hz\
+lowpass frequency 150hz\
+gain value : 11\
+\
+3eme \'e9tape\
+eq3 : 175 Hz (r\'e9ponse entre 173hz et 178hz)\
+bouger entre 153Hz et 198Hz\
+lowpass frequency 200hz\
+gain value : 8hz\
+\
+4eme \'e9tape :\
+\
+eq4 : 220hz (r\'e9ponse entre 219Hz et 224hz)\
+\pard\pardeftab720
+
+\f1\fs26 \cf0 bouger entre 200Hz et 250Hz\
+lowpass frequency 260hz\
+gain value : 8\
+\
+\
+\
+\
+\
+}

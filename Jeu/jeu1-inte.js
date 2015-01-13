@@ -445,8 +445,6 @@ jeu1.prototype.init = function() {
 	 	console.log("Jeu Win");
 
 	 	victoire1 = 1;
-
-
 	}
 
 	/*******
@@ -497,4 +495,10 @@ jeu1.prototype.init = function() {
 		}
 
 	}
+};
+
+jeu1.prototype.instructions = function() {
+	console.log("instructions");
+	
+	// this.init();
 };

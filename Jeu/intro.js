@@ -25,7 +25,7 @@ introNarration.prototype.init = function(){
 
 		//Lancement du jeu 1
 		var jeu = new jeu1();
-		jeu.init();
+		jeu.instructions();
 
 	}, 3000)
 
