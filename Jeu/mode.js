@@ -13,22 +13,22 @@ ModeJeu.prototype.init = function(){
 	function keyboardMode(event){
 		//Transforme keyCode en String correspondant
 		touche = String.fromCharCode(event.keyCode);
-		//console.log(touche);
+		console.log(touche);
 
 		switch(touche){
-			case "D":
+			case "F":
 				//Mode 1 joueur
 				console.log("1j");
 				mode = 0;
 				explicationMode(mode);
 				break;
-			case "F":
+			case "J":
 				//Mode 2 joueur
 				console.log("2j");
 				mode = 1;
 				explicationMode(mode);
 				break;
-			case "G":
+			case " ":
 				//On vide le canvas
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				//On affiche le message de validation du mode de jeu
@@ -58,18 +58,18 @@ ModeJeu.prototype.init = function(){
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			//On affiche le nouveau message
 			ctx.fillText("Vous avez choisis le mode 1 joueur", canvas.width/2, canvas.height/2);
-			ctx.fillText("D: 1 joueur", canvas.width/3, canvas.height/1.5);
-			ctx.fillText("F: 2 joueurs", 1.5*canvas.width/3, canvas.height/1.5);
-			ctx.fillText("G: Valider", 2*canvas.width/3, canvas.height/1.5);	
+			ctx.fillText("F: 1 joueur", canvas.width/3, canvas.height/1.5);
+			ctx.fillText("J: 2 joueurs", 1.5*canvas.width/3, canvas.height/1.5);
+			ctx.fillText("Espace: Valider", 2*canvas.width/3, canvas.height/1.5);	
 		}
 		else if(mode == 1){
 			//On vide le canvas
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			//On affiche le nouveau message
 			ctx.fillText("Vous avez choisis le mode 2 joueurs", canvas.width/2, canvas.height/2);
-			ctx.fillText("D: 1 joueur", canvas.width/3, canvas.height/1.5);
-			ctx.fillText("F: 2 joueurs", 1.5*canvas.width/3, canvas.height/1.5);
-			ctx.fillText("G: Valider", 2*canvas.width/3, canvas.height/1.5);	
+			ctx.fillText("F: 1 joueur", canvas.width/3, canvas.height/1.5);
+			ctx.fillText("J: 2 joueurs", 1.5*canvas.width/3, canvas.height/1.5);
+			ctx.fillText("Espace: Valider", 2*canvas.width/3, canvas.height/1.5);	
 		}
 	}
 }

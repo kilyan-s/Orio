@@ -35,8 +35,8 @@ function afficherMode(){
 	ctx.textAlign = 'center';
  	ctx.fillText("Choisissez un mode de jeu", canvas.width/2, canvas.height/2);
 
- 	ctx.fillText("D: 1 joueur", canvas.width/3, canvas.height/1.5);
-	ctx.fillText("F: 2 joueurs", 2*canvas.width/3, canvas.height/1.5);
+ 	ctx.fillText("F: 1 joueur", canvas.width/3, canvas.height/1.5);
+	ctx.fillText("J: 2 joueurs", 2*canvas.width/3, canvas.height/1.5);
 	//Fichier modejeu.js
 	mode = new ModeJeu;
 	mode.init();

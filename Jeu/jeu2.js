@@ -10,7 +10,10 @@ jeu2.prototype.init = function() {
 	var nbTouches = 0;
 	var ordreTouches = [];
 	//Fichiers sons
-	var fileList = [];
+	var fileList2 = [
+		"white-noise-long", 
+		"position"
+	];
 
 	/******
 
@@ -46,7 +49,7 @@ jeu2.prototype.init = function() {
 	source.connect(panner);
 	panner.connect(context.destination);
 	//Chargement du son
-	setAudioSource(source,0);
+	setAudioSource(source, 0, fileList2);
 	//Lancement du son
 	source.start();
 	//Lorsque le son est fini on joue le suivant
@@ -80,7 +83,7 @@ jeu2.prototype.init = function() {
 			source.connect(panner);
 
 			//Choisi le son à jouer
-			setAudioSource(source, 0);
+			setAudioSource(source, 0, fileList2);
 			//On recupere l'heure courante
 			var currentTime = context.currentTime;
 			//On laisse un délai d'0.2sec avant de jouer le son
@@ -134,7 +137,6 @@ jeu2.prototype.init = function() {
 				verification = false;
 				console.log("Séquence non valide");
 				return;	
-
 			}
 		}
 		if(verification == true){
@@ -169,7 +171,7 @@ jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0);
+					setAudioSource(source, 0, fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt
@@ -186,7 +188,7 @@ jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0);
+					setAudioSource(source, 0, fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt
@@ -203,7 +205,7 @@ jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0);
+					setAudioSource(source, 0, fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt
@@ -220,7 +222,7 @@ jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0);
+					setAudioSource(source, 0, fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt
@@ -237,7 +239,7 @@ jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0);
+					setAudioSource(source, 0,fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt
@@ -254,7 +256,7 @@ jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0);
+					setAudioSource(source, 0, fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt

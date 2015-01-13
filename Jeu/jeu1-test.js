@@ -138,84 +138,7 @@ imgperso.src = perso.url;
 
 var vie = 3;
 var coeur = new Image();
-coeur.src = "img/vie.svg"
-
-// Permet de changer le type de reverb
-function setReverbImpulseResponse(url, convolver) {
-    // Load impulse response asynchronously
-    var request = new XMLHttpRequest();
-    request.open("GET", url, true);
-    request.responseType = "arraybuffer";
-
-    request.onload = function() { 
-        context.decodeAudioData(
-            request.response,
-            function(buffer) {
-                convolver.buffer = buffer;
-            },
-
-            function(buffer) {
-                // console.log("Error decoding impulse response!");
-            }
-        );
-    }
-
-    request.send();
-}
-
-// Permet de changer le son de la source
-function setAudioSource(chooseSource, i) {
-    var buffer = bufferList[i];
-
-    // See if we have cached buffer
-    if (buffer) {
-        chooseSource.buffer = buffer;
-    } else {
-        // Load asynchronously
-        var url = fileList[i]+".wav";
-
-        var request = new XMLHttpRequest();
-        request.open("GET", url, true);
-        request.responseType = "arraybuffer";
-
-        request.onload = function() { 
-            context.decodeAudioData(
-                request.response,
-                function(buffer) {
-                    mixToMono(buffer);
-                    chooseSource.buffer = buffer;
-                    bufferList[i] = buffer;  // cache it
-                },
-
-                function(buffer) {
-                    // console.log("Error decoding audio source data!");
-                }
-            );
-        }
-
-        request.send();
-    }
-}
-
-// Permet de convertir les sons qui sont en stéréo en mono, en effet, la spatialisation ne marche bien qu'avec des sons en mono
-function mixToMono(buffer) {
-    if (buffer.numberOfChannels == 2) {
-        var pL = buffer.getChannelData(0);
-        var pR = buffer.getChannelData(1);
-        var length = buffer.length;
-        
-        for (var i = 0; i < length; ++i) {
-            var mono = 0.5 * (pL[i] + pR[i]);
-            pL[i] = mono;
-            pR[i] = mono;
-        }
-    }
-}
-
-function setSourceBuffer(buffer) {
-    source.buffer = buffer;
-}
-
+coeur.src = "img/vie.svg";
 
 /*
 *	Start panning
@@ -316,7 +239,7 @@ function init(){
 	source.playbackRate.value = 1.0;
 	// console.log(source);
 	//Chargement du son initial
-	setAudioSource(source, 0);
+	setAudioSource(source, 0, fileList);
 	//Incrément pour le premier obstacle
 	nbObstacles++;
 
@@ -351,7 +274,7 @@ function relanceSon(){
 		panner.setPosition(obstaclex, obstacley, 0);
 
 		//On choisi le son à jouer
-		setAudioSource(source, 0);
+		setAudioSource(source, 0, fileList);
 
 		//On recupere l'heure courante
 		var currentTime = context.currentTime;

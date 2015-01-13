@@ -17,6 +17,11 @@ jeu3.prototype.init = function() {
 	var goupille2bool = false;
 	var goupille3bool = false;
 	var goupille4bool = false;
+	console.log(fileList);
+	var fileList3 = [
+		"position"
+	];
+	console.log(fileList);
 
 	/*
 		Il faut re-créer le context à chaque fois sinon il n'est pas visible dans les autres fichiers
@@ -32,7 +37,7 @@ jeu3.prototype.init = function() {
 	source.connect(panner);
 	panner.connect(context.destination);
 
-	setAudioSource(source, 0);
+	setAudioSource(source, 0, fileList3);
 	source.loop = true;
 
 	source.start();
