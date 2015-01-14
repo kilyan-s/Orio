@@ -24,8 +24,8 @@ introNarration.prototype.init = function(){
 		ctx.fillText("L'assemblage s'arrête pour l'instant ici", canvas.width/2, 2*canvas.height/3);
 
 		//Lancement du jeu 1
-		var jeu = new jeu1();
-		jeu.instructions();
+		var jeu = new jeu3();
+		jeu.init();
 
 	}, 3000)
 
