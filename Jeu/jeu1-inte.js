@@ -80,7 +80,7 @@ jeu1.prototype.init = function() {
 	//Délai entre chaque obstacle
 	var delai = 1.5;
 	var fileList = [
-		"white-noise-long"
+		"white-noise-long.wav"
 	];
 	//Interval pour l'animation
 	var interval;
@@ -133,10 +133,10 @@ jeu1.prototype.init = function() {
 
 	
 
-	bufferList = new Array(fileList.length);
-	for (var i = 0; i< fileList.length; i++){
-		bufferList = 0;
-	}
+	// bufferList = new Array(fileList.length);
+	// for (var i = 0; i< fileList.length; i++){
+	// 	bufferList = 0;
+	// }
 
 	//Initialize audio context
 	context = new webkitAudioContext();

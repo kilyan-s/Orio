@@ -3,6 +3,26 @@ var ModeJeu = function(){
 };
 
 ModeJeu.prototype.init = function(){
+
+	var sonsMode = [
+	"sons/mode/choixmode.mp3",
+	"sons/mode/mode1j.mp3",
+	"sons/mode/mode2j.mp3"
+	];
+
+	//Création de la source
+	source = context.createBufferSource();
+
+	//Création du panner
+	//panner = context.createPanner();
+	//Routing
+	source.connect(panner);
+	panner.connect(context.destination);
+
+	source.loop = true;
+	setAudioSource(source, 0, sonsMode);
+	source.start();
+
 	/*******
 
 		KEYBOARD
@@ -29,6 +49,8 @@ ModeJeu.prototype.init = function(){
 				explicationMode(mode);
 				break;
 			case " ":
+				//On arrete le son
+				source.stop();
 				//On vide le canvas
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				//On affiche le message de validation du mode de jeu
@@ -43,8 +65,8 @@ ModeJeu.prototype.init = function(){
 
 				//Fichier intro.js
 				//Lancement de la premiere phase de narration
-				var intro = new introNarration();
-				intro.init();
+				var narration = new Narration();
+				narration.init();
 				
 				break;
 			default:
@@ -54,6 +76,18 @@ ModeJeu.prototype.init = function(){
 
 	explicationMode = function(mode){
 		if(mode == 0){
+			source.stop();
+			//Création de la source
+			source = context.createBufferSource();
+
+			//Routing
+			source.connect(panner);
+			panner.connect(context.destination);
+
+			source.loop = true;
+			setAudioSource(source, 1, sonsMode);
+			source.start();
+
 			//On vide le canvas
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			//On affiche le nouveau message
@@ -63,6 +97,19 @@ ModeJeu.prototype.init = function(){
 			ctx.fillText("Espace: Valider", 2*canvas.width/3, canvas.height/1.5);	
 		}
 		else if(mode == 1){
+			source.stop();
+			//Création de la source
+			source = context.createBufferSource();
+
+			//Routing
+			source.connect(panner);
+			panner.connect(context.destination);
+
+			source.loop = true;
+			setAudioSource(source, 2, sonsMode);
+			source.start();
+
+
 			//On vide le canvas
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			//On affiche le nouveau message

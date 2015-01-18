@@ -11,8 +11,8 @@ jeu2.prototype.init = function() {
 	var ordreTouches = [];
 	//Fichiers sons
 	var fileList2 = [
-		"white-noise-long", 
-		"position"
+		"white-noise-long.wav", 
+		"position.wav"
 	];
 
 	/******

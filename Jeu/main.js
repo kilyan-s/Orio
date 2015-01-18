@@ -19,8 +19,11 @@ window.onload = function(){
 	}
 	var background = document.getElementById("bg");
 	background.style.visibility = "hidden";
+
+	var casque1 = new Casque();
+	casque1.init();
 	//Affichages des instructions pour le choix du modes
-	afficherMode();
+	//afficherMode();
 
 };
 

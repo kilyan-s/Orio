@@ -36,7 +36,7 @@ jeu3.prototype.init = function() {
 	var goupille4Max = 250;
 
 	var fileList3 = [
-		"sons/jeu3/son"
+		"sons/jeu3/son.wav"
 	];
 
 	//
