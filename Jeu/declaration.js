@@ -11,6 +11,7 @@ var source;
 var audioCtx, audioContext;
 var panner, listener;
 var fileList;
+var gain;
 
 var jeu1, jeu2, jeu3, jeu4 = 0;
 var mode;

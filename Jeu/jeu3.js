@@ -2,9 +2,9 @@
 
 
 **/
-var jeu3 = function(){};
+var Jeu3 = function(){};
 
-jeu3.prototype.init = function() {
+Jeu3.prototype.init = function() {
 	console.log("salut !");
 	/*******
 		Position du crochet et des goupilles eh Hz

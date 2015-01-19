@@ -17,6 +17,11 @@ window.onload = function(){
 	    alert("Impossible de récupérer le context du canvas");
 	    return;
 	}
+	if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudioContext')){
+		window.webkitAudioContext = AudioContext;
+	}
+    
+
 	var background = document.getElementById("bg");
 	background.style.visibility = "hidden";
 

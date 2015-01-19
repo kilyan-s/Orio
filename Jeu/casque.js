@@ -10,6 +10,7 @@ Casque.prototype.init = function(){
 	//On vide le canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillText("Veuillez-vous munir d'un casque !", canvas.width/2, canvas.height/2);
+	ctx.fillText("Appuyez sur espace pour continuer !", canvas.width/2, 2.5*canvas.height/4);
 
 	window.addEventListener("keydown", keyboardCasque, false);
 
@@ -26,10 +27,14 @@ Casque.prototype.init = function(){
 
 	//Création du panner
 	panner = context.createPanner();
+	/*gain = context.createGain();
+	gain.gain.value = 10;*/
 	//Routing
 	source.connect(panner);
 	panner.connect(context.destination);
-
+	/*panner.connect(gain);
+	gain.connect(context.destination);
+*/
 	source.loop = true;
 	setAudioSource(source, 0, sonCasque);
 	source.start();

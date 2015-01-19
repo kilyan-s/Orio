@@ -1,9 +1,10 @@
+var urlListeIntro;
 var Narration = function(){
 
 };
 
 Narration.prototype.init = function(){
-	var urlListeIntro = [
+	urlListeIntro = [
 		"sons/narration/part1.mp3",
 		"sons/narration/part2.mp3",
 		"sons/narration/part3.mp3",
@@ -11,7 +12,7 @@ Narration.prototype.init = function(){
 		"sons/narration/part5.mp3",
 		"sons/narration/part6.mp3",
 		"sons/narration/part7.mp3",
-		"sons/narration/partchoixpierre.mp3",
+		"sons/narration/choixpierre.mp3",
 		"sons/narration/1_pierre_garder.mp3",
 		"sons/narration/1_pierre_jeter.mp3",
 		"sons/narration/2_pierre_garder.mp3",
@@ -25,8 +26,11 @@ Narration.prototype.init = function(){
 	bufferList = new Array(urlListeIntro.length);
 	for (var i = 0; i< urlListeIntro.length; i++){
 		bufferList = 0;
-	}
+	}	
+	
+};
 
+Narration.prototype.part1 = function(){
 	//Création de la source
 	source = context.createBufferSource();
 
@@ -35,17 +39,88 @@ Narration.prototype.init = function(){
 	panner.connect(context.destination);
 
 	source.loop = false;
-	setAudioSource(source, 0, urlListeIntro);
+	setAudioSource(source, 10, urlListeIntro);
 	source.start();
 
 	source.onended = function(){
 		//Lancement du jeu 1
-		var jeu = new jeu3();
-		jeu.init();
+		var jeu1st = new Jeu1();
+		jeu1st.instructions();
 	}
-	
 	//On vide le canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillText("Première partie de narration", canvas.width/2, canvas.height/2);
-	
-}
+};
+
+Narration.prototype.part2 = function(){
+	//Création de la source
+	source = context.createBufferSource();
+	panner = context.createPanner();
+	//Routing
+	source.connect(panner);
+	panner.connect(context.destination);
+
+	source.loop = false;
+	setAudioSource(source, 11, urlListeIntro);
+	source.start();
+
+	source.onended = function(){
+		//Lancement du jeu 1
+		var jeu2 = new Jeu2();
+		jeu2.instructions();
+	}
+	//On vide le canvas
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillText("Première partie de narration", canvas.width/2, canvas.height/2);
+};
+
+Narration.prototype.part3 = function(){
+
+};
+
+Narration.prototype.part4 = function(){
+
+};
+
+Narration.prototype.part5 = function(){
+
+};
+
+Narration.prototype.part6 = function(){
+
+};
+
+Narration.prototype.part7 = function(){
+
+};
+
+Narration.prototype.choixpierre = function(){
+
+};
+
+Narration.prototype.pierreGarder1 = function(){
+
+};
+
+Narration.prototype.pierreJeter1 = function(){
+
+};
+
+Narration.prototype.pierreGarder2 = function(){
+
+};
+
+Narration.prototype.pierreJeter2 = function(){
+
+};
+
+Narration.prototype.pierreRien2 = function(){
+
+};
+
+Narration.prototype.fin1 = function(){
+
+};
+Narration.prototype.fin2 = function(){
+
+};

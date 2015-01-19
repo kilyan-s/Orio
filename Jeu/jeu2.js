@@ -1,7 +1,7 @@
-var jeu2 = function(){};
+var Jeu2 = function(){};
 
 
-jeu2.prototype.init = function() {
+Jeu2.prototype.init = function() {
 	//ctx.clearRect(0, 0, canvas.width, canvas.height);
 	//SONS
 	var nbSons = 0;
@@ -275,4 +275,73 @@ jeu2.prototype.init = function() {
 };
 
 
+Jeu2.prototype.instructions = function() {
+	console.log("instructions");
+	sonsJeu2Instructions = [
+	"sons/instructions/jeu2.mp3",
+	"sons/instructions/jeu3.mp3"
+	];
 
+	//Création de la source
+	source = context.createBufferSource();
+
+	//Routing
+	source.connect(panner);
+	panner.connect(context.destination);
+
+	source.loop = true;
+	//On donne les instructions selon le mode de jeu
+	if(mode == 0 ){
+		setAudioSource(source, 0, sonsJeu2Instructions);
+	}else{
+		setAudioSource(source, 1, sonsJeu2Instructions);
+	}
+	
+	source.start();
+	//Evenement clavier
+	window.addEventListener("keydown", keyboardInstruction2, false);
+
+	//this.init();
+	function keyboardInstruction2(event){
+		//Transforme keyCode en String correspondant
+		touche = String.fromCharCode(event.keyCode);
+		console.log(touche);
+
+		switch(touche){
+			case " ":
+				console.log("Lancer Jeu");
+				//On retire l'event listener
+				window.removeEventListener("keydown", keyboardInstruction2);
+				//On arrete de looper le son
+				source.loop = false;
+				//On coupe le son
+				source.stop();
+				//On affiche lance le jeu
+				var jeu2 = new Jeu2();
+				jeu2.init();
+				break;
+			case "F":
+				console.log("Relire instructions");
+				source.stop();
+				//Création de la source
+				source = context.createBufferSource();
+
+				//Routing
+				source.connect(panner);
+				panner.connect(context.destination);
+
+				source.loop = true;
+				//On donne les instructions selon le mode de jeu
+				if(mode == 0 ){
+					setAudioSource(source, 0, sonsJeu2Instructions);
+				}else{
+					setAudioSource(source, 1, sonsJeu2Instructions);
+				}
+				source.start();
+				break;
+			default:
+				return;
+		}
+	}
+
+};

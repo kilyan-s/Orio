@@ -1,9 +1,8 @@
-var jeu1 = function(){};
+var sonsJeu1Instructions;
+var sonRecommencer;
+var Jeu1 = function(){};
 
-jeu1.prototype.init = function() {
-	if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudioContext'))
-    window.webkitAudioContext = AudioContext;
-
+Jeu1.prototype.init = function() {
 	context;
 	var buffer;
 
@@ -80,7 +79,8 @@ jeu1.prototype.init = function() {
 	//Délai entre chaque obstacle
 	var delai = 1.5;
 	var fileList = [
-		"white-noise-long.wav"
+		"white-noise-long.wav",
+		"sons/commun/recommencer.mp3"
 	];
 	//Interval pour l'animation
 	var interval;
@@ -223,6 +223,7 @@ jeu1.prototype.init = function() {
 
 	// console.log(panner);
 	source.playbackRate.value = 1.0;
+
 	// console.log(source);
 	//Chargement du son initial
 	setAudioSource(source, 0, fileList);
@@ -242,13 +243,15 @@ jeu1.prototype.init = function() {
 
 	interval = window.setInterval(animation, 150);
 
+	window.addEventListener("keydown", verifKey1, false);
+
+
 	//Fin init
 		
 
-	
-
 	function relanceSon(){
-		if(nbObstacles >= 10 && vie != 0){
+		if(nbObstacles >= 2 && vie != 0){
+			source.stop();
 			clearInterval(interval);
 			finJeuWin();
 			
@@ -434,6 +437,20 @@ jeu1.prototype.init = function() {
 	 	console.log("Jeu Lose");
 	 	console.log(nbObstacles);
 
+	 	//On arrete le son si il est en train de jouer
+	 	source.stop();
+	 	//Création de la source
+		sonRecommencer = context.createBufferSource();
+
+		//Routing
+		sonRecommencer.connect(panner);
+		panner.connect(gain);
+		gain.connect(context.destination);
+
+		sonRecommencer.loop = true;
+		setAudioSource(sonRecommencer, 1, fileList);
+		sonRecommencer.start();
+
 	 	victoire1 = 0;
 	}
 
@@ -445,6 +462,15 @@ jeu1.prototype.init = function() {
 	 	console.log("Jeu Win");
 
 	 	victoire1 = 1;
+	 	//On retire l'event listener pour arreter les déplacements du joueur
+	 	window.removeEventListener("keydown", verifKey1);
+	 	//On réinitialise la position du lsitener et du panner
+	 	listener.setPosition(0,0,0);
+	 	panner.setPosition(0,0,0);
+	 	//Lancement de la 2e partie de narration
+	 	var narration = new Narration();
+	 	narration.init();
+	 	narration.part2();
 	}
 
 	/*******
@@ -452,14 +478,8 @@ jeu1.prototype.init = function() {
 		KEYBOARD
 
 	*******/
-	window.onkeydown = function(event){
-		//Transforme keyCode en String correspondant
+	function verifKey1(event){
 		touche = String.fromCharCode(event.keyCode);
-		// console.log(touche);
-		verifKey1()
-	}
-
-	function verifKey1(){
 		switch(touche){
 			case "F":
 			//On verifie la position du listener avant de le deplacer
@@ -481,11 +501,15 @@ jeu1.prototype.init = function() {
 					console.log(perso.x);
 				}
 				break;
-			//relancer le jeu ou passer à la suiteazeryio
+			//relancer le jeu ou passer à la suite
 			case " ":
 				if(victoire1 == 0){
-					console.log(jeu);
-					var jeu = new jeu1();
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					//Arrete le son "recommencer le jeu"
+					sonRecommencer.loop = false;
+					sonRecommencer.stop();
+					//console.log(jeu);
+					var jeu = new Jeu1();
 					jeu.init();
 				}else{
 					console.log("jeux suivant");
@@ -497,8 +521,73 @@ jeu1.prototype.init = function() {
 	}
 };
 
-jeu1.prototype.instructions = function() {
+Jeu1.prototype.instructions = function() {
 	console.log("instructions");
+	sonsJeu1Instructions = [
+	"sons/instructions/jeu1.mp3",
+	"sons/instructions/jeu2.mp3"
+	];
+
+	//Création de la source
+	source = context.createBufferSource();
+
+	//Routing
+	source.connect(panner);
+	panner.connect(context.destination);
+
+	source.loop = true;
+	//On donne les instructions selon le mode de jeu
+	if(mode == 0 ){
+		setAudioSource(source, 0, sonsJeu1Instructions);
+	}else{
+		setAudioSource(source, 1, sonsJeu1Instructions);
+	}
 	
-	// this.init();
+	source.start();
+	//Evenement clavier
+	window.addEventListener("keydown", keyboardInstruction1, false);
+
+	//this.init();
+	function keyboardInstruction1(event){
+		//Transforme keyCode en String correspondant
+		touche = String.fromCharCode(event.keyCode);
+		console.log(touche);
+
+		switch(touche){
+			case " ":
+				console.log("Lancer Jeu");
+				//On retire l'event listener
+				window.removeEventListener("keydown", keyboardInstruction1);
+				//On arrete de looper le son
+				source.loop = false;
+				//On coupe le son
+				source.stop();
+				//On affiche lance le jeu
+				var jeu1 = new Jeu1();
+				jeu1.init();
+				break;
+			case "F":
+				console.log("Relire instructions");
+				source.stop();
+				//Création de la source
+				source = context.createBufferSource();
+
+				//Routing
+				source.connect(panner);
+				panner.connect(context.destination);
+
+				source.loop = true;
+				//On donne les instructions selon le mode de jeu
+				if(mode == 0 ){
+					setAudioSource(source, 0, sonsJeu1Instructions);
+				}else{
+					setAudioSource(source, 1, sonsJeu1Instructions);
+				}
+				source.start();
+				break;
+			default:
+				return;
+		}
+	}
+
 };
