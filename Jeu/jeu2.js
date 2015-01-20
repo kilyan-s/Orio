@@ -1,18 +1,29 @@
+var victoire2 = 0;
+var nbSons;
+var ordreSons;
+//TOUCHES
+var nbTouches;
+var ordreTouches;
+
 var Jeu2 = function(){};
 
 
 Jeu2.prototype.init = function() {
 	//ctx.clearRect(0, 0, canvas.width, canvas.height);
 	//SONS
-	var nbSons = 0;
-	var ordreSons = [];
+	nbSons = 0;
+	ordreSons = [];
 	//TOUCHES
-	var nbTouches = 0;
-	var ordreTouches = [];
+	nbTouches = 0;
+	ordreTouches = [];
 	//Fichiers sons
 	var fileList2 = [
-		"white-noise-long.wav", 
-		"position.wav"
+		"white-noise.wav", 
+		"position.wav",
+		"",
+		"",
+		"",
+		"sons/commun/recommencer.mp3"
 	];
 
 	/******
@@ -20,9 +31,9 @@ Jeu2.prototype.init = function() {
 		1ER SON
 
 	******/
-	//Random entre 0 et 60
-	var rand = Math.floor((Math.random() * 60));
-	//Random entre 0 et 6
+	//Random entre 0 et 50
+	var rand = Math.floor((Math.random() * 50));
+	//Random entre 0 et 5
 	rand = Math.floor(rand / 10);
 	console.log(rand);
 	//Ajoute le numéro du son au tableau pour la vérification
@@ -58,6 +69,9 @@ Jeu2.prototype.init = function() {
 		relanceSon();
 	}
 	
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillText("2e jeu", canvas.width/2, canvas.height/2);
+
 	//Evt clavier
 	//window.addEventListener("keydown", keyboardJeu2, false );
 
@@ -66,9 +80,9 @@ Jeu2.prototype.init = function() {
 			window.addEventListener("keydown", keyboardJeu2, false);
 		}else{
 			console.log("Nbsons "+nbSons);
-			//Random entre 0 et 60
-			var rand = Math.floor((Math.random() * 60));
-			//Random entre 0 et 6
+			//Random entre 0 et 50
+			var rand = Math.floor((Math.random() * 50));
+			//Random entre 0 et 5
 			rand = Math.floor(rand / 10);
 			//On ajoute l'index du son au tab
 			ordreSons.push(rand);
@@ -106,11 +120,61 @@ Jeu2.prototype.init = function() {
 *******/
 
 	function finJeuWin() {
-		console.log("Jeu win");
+		//On vide le canvas
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.textAlign = 'center';
+	 	ctx.fillText("Félicitiation vous avez évité tous les obstacles !", canvas.width/2, canvas.height/2);
+	 	console.log("Jeu Win");
+
+	 	victoire2 = 1;
+	 	//On retire l'event listener pour arreter les déplacements du joueur
+	 	window.removeEventListener("keydown", keyboardJeu2);
+	 	//On réinitialise la position du lsitener et du panner
+	 	listener.setPosition(0,0,0);
+	 	panner.setPosition(0,0,0);
+	 	//Lancement de la 2e partie de narration
+	 	var narration = new Narration();
+	 	narration.init();
+	 	narration.part3();
 	}
 
 	function finJeuLose(){
-		console.log("Jeu lose");
+		//On vide le canvas
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.textAlign = 'center';
+	 	ctx.fillText("Vous avez perdu !", canvas.width/2, canvas.height/2);
+	 	ctx.fillText("Appuyez sur espace pour relancer le jeu!", canvas.width/2, canvas.height/3);
+	 	console.log("Jeu Lose");
+
+	 	/*console.log("ordres touches length: " + ordreTouches.length);
+	 	//Vider le tableau ordresTouches, sinon les touches continuent à s'ajouter et le tableau est trop long
+	 	for(var i = 0; i <= ordreTouches.length; i++){
+	 		console.log("ordres touches: " + ordreTouches);
+	 		ordreTouches.pop();
+	 		console.log("i: " + i);
+	 	}
+	 	console.log("ordres touches length: " + ordreTouches.length);
+	 	console.log("ordres touches: " + ordreTouches);*/
+
+	 	ordreTouches = null;
+	 	window.removeEventListener("keydown", keyboardJeu2);
+	 	window.addEventListener("keydown", keyboardRelancerJeu, false);
+	 	//On arrete le son si il est en train de jouer
+	 	source.stop();
+	 	panner.setPosition(0,0,0);
+	 	listener.setPosition(0,0,0);
+	 	//Création de la source
+		sonRecommencer = context.createBufferSource();
+
+		//Routing
+		sonRecommencer.connect(panner);
+		panner.connect(context.destination);
+
+		sonRecommencer.loop = true;
+		setAudioSource(sonRecommencer, 5, fileList2);
+		sonRecommencer.start();
+
+		victoire2 = 0;
 	}
 
 /*******
@@ -121,8 +185,8 @@ Jeu2.prototype.init = function() {
 	function verifSequence() {
 		var verification;
 		// console.log("verif sequence");
-		console.log(ordreSons);
-		console.log(ordreTouches);
+		console.log("ordre sons: " + ordreSons);
+		console.log("ordre touches: " + ordreTouches);
 		if(ordreSons.length != ordreTouches.length){
 			console.log("Pas meme longeur");
 			return false;
@@ -136,13 +200,13 @@ Jeu2.prototype.init = function() {
 			else{
 				verification = false;
 				console.log("Séquence non valide");
+				finJeuLose();
 				return;	
 			}
 		}
 		if(verification == true){
 			console.log("Séquence valide"); 
-		} else{
-			console.log("Séquance non valide");
+			finJeuWin();
 		}
 	}
 /*******
@@ -153,16 +217,10 @@ Jeu2.prototype.init = function() {
 	function keyboardJeu2(event){
 		touche = String.fromCharCode(event.keyCode);
 		console.log(touche);
-		nbTouches++;
-		//Si l'utilisateur a dejà appuyé sur 6 touches on verifie la séquence
-		if(nbTouches > 5){
-			verifSequence();
-			window.removeEventListener("keydown", keyboardJeu2);
-		}
-		//Sinon on ajoute la touche au tableau ordreTouches
-		else{
+		// nbTouches++;
+
 			switch(touche){
-				case "E":
+				case "S":
 					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
 					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(0);
@@ -178,8 +236,10 @@ Jeu2.prototype.init = function() {
 					source.onended = function(){
 						window.addEventListener("keydown", keyboardJeu2, false);	
 					}
+					//On incrément le nb touche que si c'est une touche du jeu
+					nbTouches++;
 					break;
-				case "R":
+				case "D":
 					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
 					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(1);
@@ -195,8 +255,10 @@ Jeu2.prototype.init = function() {
 					source.onended = function(){
 						window.addEventListener("keydown", keyboardJeu2, false);	
 					}
+					//On incrément le nb touche que si c'est une touche du jeu
+					nbTouches++;
 					break;
-				case "T":
+				case "F":
 					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
 					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(2);
@@ -212,8 +274,10 @@ Jeu2.prototype.init = function() {
 					source.onended = function(){
 						window.addEventListener("keydown", keyboardJeu2, false);	
 					}
+					//On incrément le nb touche que si c'est une touche du jeu
+					nbTouches++;
 					break;
-				case "D":
+				case "G":
 					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
 					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(3);
@@ -229,8 +293,10 @@ Jeu2.prototype.init = function() {
 					source.onended = function(){
 						window.addEventListener("keydown", keyboardJeu2, false);	
 					}
+					//On incrément le nb touche que si c'est une touche du jeu
+					nbTouches++;
 					break;
-				case "F":
+				case "H":
 					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
 					window.removeEventListener("keydown", keyboardJeu2);
 					ordreTouches.push(4);
@@ -246,30 +312,44 @@ Jeu2.prototype.init = function() {
 					source.onended = function(){
 						window.addEventListener("keydown", keyboardJeu2, false);	
 					}
+					//On incrément le nb touche que si c'est une touche du jeu
+					nbTouches++;
 					break;
-				case "G":
-					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
-					window.removeEventListener("keydown", keyboardJeu2);
-					ordreTouches.push(5);
-					//Création buffer source
-					source = context.createBufferSource();
-					//Connect la source au panner
-					source.connect(panner);
-					//On choisit le son à jouer
-					setAudioSource(source, 0, fileList2);
-					//On lance le son
-					source.start();
-					//lorsque le son est fini on remet le listener d'evt
-					source.onended = function(){
-						window.addEventListener("keydown", keyboardJeu2, false);	
-					}
-					break;
+					default:
+						return;
+				}
+			console.log(ordreTouches);
+		//Si l'utilisateur a dejà appuyé sur 6 touches on verifie la séquence
+		if(nbTouches >= 5){
+			source.onended = function() {
+				verifSequence();
+				window.removeEventListener("keydown", keyboardJeu2);
+			}
+			
+		}
+	}
+
+	function keyboardRelancerJeu(event){
+		touche = String.fromCharCode(event.keyCode);
+		console.log(touche);
+		switch(touche){
+			//relancer le jeu ou passer à la suite
+			case " ":
+				if(victoire2 == 0){
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					//Arrete le son "recommencer le jeu"
+					sonRecommencer.loop = false;
+					sonRecommencer.stop();
+					//console.log(jeu);
+					window.removeEventListener("keydown", keyboardRelancerJeu);
+					var jeu = new Jeu2();
+					jeu.init();
+				}else{
+					console.log("jeux suivant");
+				}
 				default:
 					return;
 			}
-			console.log(ordreTouches);
-		}
-		
 	}
 
 };
@@ -298,6 +378,10 @@ Jeu2.prototype.instructions = function() {
 	}
 	
 	source.start();
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillText("Instructions jeu 2", canvas.width/2, canvas.height/2);
+
 	//Evenement clavier
 	window.addEventListener("keydown", keyboardInstruction2, false);
 

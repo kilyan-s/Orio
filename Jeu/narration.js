@@ -53,6 +53,9 @@ Narration.prototype.part1 = function(){
 };
 
 Narration.prototype.part2 = function(){
+	//Retire le background
+	var background = document.getElementById("bg");
+	background.style.visibility = "hidden";
 	//Création de la source
 	source = context.createBufferSource();
 	panner = context.createPanner();
@@ -71,11 +74,29 @@ Narration.prototype.part2 = function(){
 	}
 	//On vide le canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillText("Première partie de narration", canvas.width/2, canvas.height/2);
+	ctx.fillText("2e partie de narration", canvas.width/2, canvas.height/2);
 };
 
 Narration.prototype.part3 = function(){
+	//Création de la source
+	source = context.createBufferSource();
+	panner = context.createPanner();
+	//Routing
+	source.connect(panner);
+	panner.connect(context.destination);
 
+	source.loop = false;
+	setAudioSource(source, 13, urlListeIntro);
+	source.start();
+
+	source.onended = function(){
+		//Lancement du jeu 1
+		var jeu3 = new Jeu3();
+		jeu3.instructions();
+	}
+	//On vide le canvas
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillText("2e partie de narration", canvas.width/2, canvas.height/2);
 };
 
 Narration.prototype.part4 = function(){

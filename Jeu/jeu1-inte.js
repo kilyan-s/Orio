@@ -544,6 +544,9 @@ Jeu1.prototype.instructions = function() {
 	}
 	
 	source.start();
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillText("Instructions jeu 1", canvas.width/2, canvas.height/2);
 	//Evenement clavier
 	window.addEventListener("keydown", keyboardInstruction1, false);
 
