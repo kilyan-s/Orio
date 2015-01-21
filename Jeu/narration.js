@@ -96,15 +96,52 @@ Narration.prototype.part3 = function(){
 	}
 	//On vide le canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillText("2e partie de narration", canvas.width/2, canvas.height/2);
+	ctx.fillText("3e partie de narration", canvas.width/2, canvas.height/2);
 };
 
 Narration.prototype.part4 = function(){
+	//Création de la source
+	source = context.createBufferSource();
+	panner = context.createPanner();
+	//Routing
+	source.connect(panner);
+	panner.connect(context.destination);
 
+	source.loop = false;
+	setAudioSource(source, 13, urlListeIntro);
+	source.start();
+
+	source.onended = function(){
+		//Lancement du jeu 1
+		var jeu4 = new Jeu4();
+		jeu4.instructions();
+	}
+	//On vide le canvas
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillText("4e partie de narration", canvas.width/2, canvas.height/2);
 };
 
 Narration.prototype.part5 = function(){
+	//Création de la source
+	source = context.createBufferSource();
+	panner = context.createPanner();
+	//Routing
+	source.connect(panner);
+	panner.connect(context.destination);
+	console.log(source);
+	console.log(urlListeIntro);
+	source.loop = false;
+	setAudioSource(source, 10, urlListeIntro);
+	source.start();
 
+	source.onended = function(){
+		//Lancement du jeu 1
+		//var jeu4 = new Jeu4();
+		//jeu4.instructions();
+	}
+	//On vide le canvas
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillText("5e partie de narration", canvas.width/2, canvas.height/2);
 };
 
 Narration.prototype.part6 = function(){

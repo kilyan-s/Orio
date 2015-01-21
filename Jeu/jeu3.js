@@ -5,7 +5,9 @@
 var Jeu3 = function(){};
 
 Jeu3.prototype.init = function() {
-	console.log("salut !");
+	console.log("Jeu 3");
+	var nbErreurs3 = 0;
+
 	/*******
 		Position du crochet et des goupilles eh Hz
 	*******/
@@ -36,7 +38,8 @@ Jeu3.prototype.init = function() {
 	var goupille4Max = 250;
 
 	var fileList3 = [
-		"sons/jeu3/son.wav"
+		"sons/jeu3/son.wav",
+		"sons/commun/recommencer.mp3"
 	];
 
 	//
@@ -57,7 +60,7 @@ Jeu3.prototype.init = function() {
 	panner = context.createPanner();
 	listener = context.listener;
 
-	panner.setPosition(50,50,0);
+	panner.setPosition(50,30,0);
 	listener.setPosition(50,10,0);
 
 	/*source.connect(panner);
@@ -137,6 +140,7 @@ Jeu3.prototype.init = function() {
 		if (filtre86.frequency.value >= (goupille1 - 1) && filtre86.frequency.value <= (goupille1 + 1)){
 			console.log("Goupille 1");
 			goupille1bool = true; 
+			filtre86.frequency.value = 76;
 			//On passe au 2e EQ
 			//On passe le gain de l'EQ 86Hz à 0
 			filtre86.gain.value = 0;
@@ -146,25 +150,41 @@ Jeu3.prototype.init = function() {
 			filtre132.gain.value = 11;
 
 		}
-		if (filtre132.frequency.value >= (goupille2 - 1) && filtre132.frequency.value <= (goupille2 + 1)){
+		else if (filtre132.frequency.value >= (goupille2 - 1) && filtre132.frequency.value <= (goupille2 + 1)){
 			console.log("Goupille 2");
 			goupille2bool = true;
+			filtre132.frequency.value = 122;
 			//On passe à l'EQ 3
 			filtre132.gain.value = 0;
 			filtrelow.frequency.value = 200;
 			filtre175.gain.value = 8;
 		}
-		if(filtre175.frequency.value >= (goupille3 - 2) && filtre175.frequency.value <= (goupille3 + 3)){
+		else if(filtre175.frequency.value >= (goupille3 - 2) && filtre175.frequency.value <= (goupille3 + 3)){
 			console.log("Goupille 3");
 			goupille3bool = true;
+			filtre175.frequency.value = 153;
 			//On passe a l'EQ 4
 			filtre175.gain.value = 0;
 			filtrelow.frequency.value = 260;
 			filtre220.gain.value = 8;
 		}
-		if(filtre220.frequency.value >= (goupille4 - 1) && filtre220.frequency.value <= (goupille4 + 4)){
+		else if(filtre220.frequency.value >= (goupille4 - 1) && filtre220.frequency.value <= (goupille4 + 4)){
 			console.log("Goupille 4");
 			goupille4bool = true;
+			filtre220.frequency.value = 200;
+		}
+		else{
+			console.log("Error");
+			nbErreurs3 ++;
+			console.log(nbErreurs3);
+			//Si le joueur fait moins de 5 erreur le jeu continue
+			if(nbErreurs3 <= 5){
+
+			}else{
+				console.log("perdu");
+				window.removeEventListener("keydown", keyboardJeu3);
+				finJeuLose();
+			}
 		}
 
 		//Si toutes les goupilles ont été levées
@@ -186,6 +206,29 @@ Jeu3.prototype.init = function() {
 function finJeuWin(){
 	console.log("Gagné");
 	source.stop();
+	window.removeEventListener("keydown", keyboardJeu3);
+	//Lancement de la suite de la narration
+	var narration = new Narration();
+	narration.part4();
+}
+
+function finJeuLose(){
+	window.addEventListener("keydown", keyboardJeu3Relancer, false);
+	//On arrete le son si il est en train de jouer
+ 	source.stop();
+ 	panner.setPosition(0,0,0);
+ 	listener.setPosition(0,0,0);
+ 	//Création de la source
+	sonRecommencer = context.createBufferSource();
+
+	//Routing
+	sonRecommencer.connect(panner);
+	panner.connect(context.destination);
+
+	sonRecommencer.loop = true;
+	setAudioSource(sonRecommencer, 1, fileList3);
+	sonRecommencer.start();
+
 }
 /*******
 
@@ -299,4 +342,100 @@ function finJeuWin(){
 				return;
 		}
 	}
+
+	function keyboardJeu3Relancer(event) {
+		touche = String.fromCharCode(event.keyCode);
+		// console.log(touche);
+
+		switch(touche){
+			case " ":
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				//Arrete le son "recommencer le jeu"
+				sonRecommencer.loop = false;
+				sonRecommencer.stop();
+				//console.log(jeu);
+				var jeu3 = new Jeu3();
+				jeu3.init();
+
+				window.removeEventListener("keydown", keyboardJeu3Relancer);
+				break;
+
+			default:
+				return;
+		}
+	}
+};
+
+Jeu3.prototype.instructions = function(){
+console.log("instructions 3");
+	sonsJeu3Instructions = [
+	"sons/instructions/jeu3.mp3",
+	"sons/instructions/jeu2.mp3"
+	];
+
+	//Création de la source
+	source = context.createBufferSource();
+
+	//Routing
+	source.connect(panner);
+	panner.connect(context.destination);
+
+	source.loop = true;
+	//On donne les instructions selon le mode de jeu
+	if(mode == 0 ){
+		setAudioSource(source, 0, sonsJeu3Instructions);
+	}else{
+		setAudioSource(source, 1, sonsJeu3Instructions);
+	}
+	
+	source.start();
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillText("Instructions jeu 3", canvas.width/2, canvas.height/2);
+	//Evenement clavier
+	window.addEventListener("keydown", keyboardInstruction3, false);
+
+	//this.init();
+	function keyboardInstruction3(event){
+		//Transforme keyCode en String correspondant
+		touche = String.fromCharCode(event.keyCode);
+		console.log(touche);
+
+		switch(touche){
+			case " ":
+				console.log("Lancer Jeu");
+				//On retire l'event listener
+				window.removeEventListener("keydown", keyboardInstruction3);
+				//On arrete de looper le son
+				source.loop = false;
+				//On coupe le son
+				source.stop();
+				//On affiche lance le jeu
+				var jeu3 = new Jeu3();
+				jeu3.init();
+				break;
+			case "F":
+				console.log("Relire instructions");
+				source.stop();
+				//Création de la source
+				source = context.createBufferSource();
+
+				//Routing
+				source.connect(panner);
+				panner.connect(context.destination);
+
+				source.loop = true;
+				//On donne les instructions selon le mode de jeu
+				if(mode == 0 ){
+					setAudioSource(source, 0, sonsJeu3Instructions);
+				}else{
+					setAudioSource(source, 1, sonsJeu3Instructions);
+				}
+				source.start();
+				break;
+			default:
+				return;
+		}
+	}
+
 };

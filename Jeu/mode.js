@@ -63,12 +63,13 @@ ModeJeu.prototype.init = function(){
 				//On retire le listener d'evenement clavier
 				window.removeEventListener("keydown", keyboardMode);
 
-				//Fichier intro.js
+				//Fichier Narrattion.js
 				//Lancement de la premiere phase de narration
-				var narration = new Jeu2();
+				var narration = new Narration();
 				narration.init();
-				// narration.part1();
-				
+				//narration.part1();
+				var jeu = new Jeu4();
+				jeu.instructions();
 				break;
 			default:
 				return;

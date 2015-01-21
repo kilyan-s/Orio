@@ -25,6 +25,7 @@ window.onload = function(){
 	var background = document.getElementById("bg");
 	background.style.visibility = "hidden";
 
+	//On démarre le jeu
 	var casque1 = new Casque();
 	casque1.init();
 	//Affichages des instructions pour le choix du modes

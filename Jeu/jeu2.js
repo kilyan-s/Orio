@@ -420,7 +420,7 @@ Jeu2.prototype.init = function() {
 
 
 Jeu2.prototype.instructions = function() {
-	console.log("instructions");
+	console.log("instructions jeu 2");
 	sonsJeu2Instructions = [
 	"sons/instructions/jeu2.mp3",
 	"sons/instructions/jeu3.mp3"
