@@ -329,7 +329,8 @@ Jeu4.prototype.init = function() {
 			      break;
 			     case "A":
 			     	listenery = y;
-			     	listenerx = x
+			     	listenerx = x;
+						listener.setPosition(listenerx, listenery, listenerz);
 			     	break;
 			    default:
 			      return; // Quit when this doesn't handle the key event.

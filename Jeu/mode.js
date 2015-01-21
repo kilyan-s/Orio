@@ -67,9 +67,9 @@ ModeJeu.prototype.init = function(){
 				//Lancement de la premiere phase de narration
 				var narration = new Narration();
 				narration.init();
-				//narration.part1();
-				var jeu = new Jeu4();
-				jeu.instructions();
+				narration.part1();
+				/*var jeu = new Jeu4();
+				jeu.instructions();*/
 				break;
 			default:
 				return;

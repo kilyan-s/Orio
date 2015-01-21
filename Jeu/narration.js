@@ -100,6 +100,8 @@ Narration.prototype.part3 = function(){
 };
 
 Narration.prototype.part4 = function(){
+	listener.setPosition(0,0,0);
+	panner.setPosition(0,0,0);
 	//Création de la source
 	source = context.createBufferSource();
 	panner = context.createPanner();
@@ -122,14 +124,14 @@ Narration.prototype.part4 = function(){
 };
 
 Narration.prototype.part5 = function(){
+	listener.setPosition(0,0,0);
+	panner.setPosition(0,0,0);
 	//Création de la source
-	source = context.createBufferSource();
+	source  = context.createBufferSource();
 	panner = context.createPanner();
 	//Routing
 	source.connect(panner);
 	panner.connect(context.destination);
-	console.log(source);
-	console.log(urlListeIntro);
 	source.loop = false;
 	setAudioSource(source, 10, urlListeIntro);
 	source.start();
