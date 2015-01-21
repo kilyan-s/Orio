@@ -5,11 +5,23 @@ var ordreSons;
 var nbTouches;
 var ordreTouches;
 
+//savoir si les séquences ont bient été réalisées
+var sequence1 = false;
+var sequence2 = false;
+var sequence3 = false;
+
+var nbErreurs = 0;
+var currentTime;
+
+
+//Création du context audio
+//context = new webkitAudioContext();
 var Jeu2 = function(){};
 
 
 Jeu2.prototype.init = function() {
 	//ctx.clearRect(0, 0, canvas.width, canvas.height);
+	
 	//SONS
 	nbSons = 0;
 	ordreSons = [];
@@ -46,14 +58,12 @@ Jeu2.prototype.init = function() {
 		SONS & ROUTING
 
 	*******/
-	//Création du context audio
-	context = new webkitAudioContext();
 	//Création source & panner & listener
 	source = context.createBufferSource();
 	panner = context.createPanner();
 	listener = context.listener;
 	//Position panner
-	panner.setPosition(50, 50, 0);
+	panner.setPosition(50, 30, 0);
 	//Position listener
 	listener.setPosition(50, 10, 0);
 	//Routing
@@ -61,8 +71,9 @@ Jeu2.prototype.init = function() {
 	panner.connect(context.destination);
 	//Chargement du son
 	setAudioSource(source, 0, fileList2);
+	currentTime = context.currentTime;
 	//Lancement du son
-	source.start();
+	source.start(currentTime + 1);
 	//Lorsque le son est fini on joue le suivant
 	source.onended = function() {
 		//Joue le son suivant
@@ -175,6 +186,12 @@ Jeu2.prototype.init = function() {
 		sonRecommencer.start();
 
 		victoire2 = 0;
+		//On reinitialise des var
+		sequence1 = false;
+		sequence2 = false;
+		sequence3 = false;
+
+		nbErreurs = 0;
 	}
 
 /*******
@@ -200,13 +217,60 @@ Jeu2.prototype.init = function() {
 			else{
 				verification = false;
 				console.log("Séquence non valide");
-				finJeuLose();
+				//On incrémente le nombre d'erreurs
+				nbErreurs++;
+				console.log(nbErreurs);
+				
+				//Si le nb d'erreurs < 3 on relance une sequence de son
+				if(nbErreurs < 3){
+					//On relance un séquence de sons
+					jeu = new Jeu2();
+					jeu.init();
+				}
+				//Sinon le nombre d'erreur = 3 alors le joueur doit recommencer completement le jeu
+				else{
+					finJeuLose();
+				}
 				return;	
 			}
 		}
+		//Si la séquence est valide
 		if(verification == true){
-			console.log("Séquence valide"); 
-			finJeuWin();
+			//Si aucune séquence n'a été validée
+			if(sequence1 == false && sequence2 == false && sequence3 == false){
+				//Séquence 1 validée
+				console.log("Séquence 1 valide"); 
+				sequence1 = true;
+				console.log(sequence1);
+				console.log(sequence2);
+				console.log(sequence3);
+				//On relance un séquence de sons
+				var jeu = new Jeu2();
+				jeu.init();
+			}
+			//Si la séquence 1 a déjà été validé
+			else if (sequence1 == true && sequence2 == false && sequence3 == false){
+				//Séquence 1 validée
+				console.log("Séquence 2 valide"); 
+				sequence2 = true;
+				console.log(sequence1);
+				console.log(sequence2);
+				console.log(sequence3);
+				//On relance un séquence de sons
+				jeu = new Jeu2();
+				jeu.init();
+			}
+			//Si la séquence 2 a déjà été validée
+			else if (sequence1 == true && sequence2 == true && sequence3 == false){
+				//Séquence 1 validée
+				console.log("Séquence 3 valide"); 
+				sequence3 = true;
+				console.log(sequence1);
+				console.log(sequence2);
+				console.log(sequence3);
+				//Les 3 séquences sont validées le jeu est terminé
+				finJeuWin();
+			}
 		}
 	}
 /*******
