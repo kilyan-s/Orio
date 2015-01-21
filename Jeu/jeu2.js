@@ -31,7 +31,7 @@ Jeu2.prototype.init = function() {
 	//Fichiers sons
 	var fileList2 = [
 		"white-noise.wav", 
-		"position.wav",
+		"",
 		"",
 		"",
 		"",
