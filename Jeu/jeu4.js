@@ -1,3 +1,4 @@
+var lancementJeu4 = false;
 var Jeu4 = function(){};
 
 //reverb pour éléments d'ambiance
@@ -8,7 +9,7 @@ var convolverGlobal;
 // pour la reverb early
 var convolverEarly;
 // spatialisation de la voix
-var panner;
+var panner4;
 //Spatialisation
 var pannerEarly
 // spatialisation neon
@@ -18,7 +19,7 @@ var pannereau;
 var pannertelephone;
 var pannerchat;
 // Source pour la voix
-var source;
+var source4;
 var sourceeau;
 var sourcefrigo;
 var sourcetelephone;
@@ -105,14 +106,14 @@ Jeu4.prototype.init = function() {
 	}
 
 	// Initialize audio
-	context = new webkitAudioContext();
+	// context = new webkitAudioContext();
 
-	// Initialisation de la personne qui écoute
-	listener = context.listener;
-	listener.setPosition(listenerx, listenery, listenerz);
+	// // Initialisation de la personne qui écoute
+	// listener = context.listener;
+	// listener.setPosition(listenerx, listenery, listenerz);
 
 	// Initialisation des sources
-	source = context.createBufferSource();
+	source4 = context.createBufferSource();
 	sourceeau = context.createBufferSource();
 	sourcefrigo = context.createBufferSource();
 	sourcetelephone = context.createBufferSource();
@@ -126,7 +127,7 @@ Jeu4.prototype.init = function() {
 	wetGainNodeEarly = context.createGain();
 
 	// permet la spatialisation des sources
-	panner = context.createPanner();
+	panner4 = context.createPanner();
 	pannerEarly = context.createPanner();
 	pannereau = context.createPanner();
 	pannerchat = context.createPanner();
@@ -148,19 +149,19 @@ Jeu4.prototype.init = function() {
 	 
 	// Connexion des sons de la personne
 	// Connect audio processing graph
-	source.connect(panner);
+	source4.connect(panner4);
 	// Connect dry mix, connect un son sans passer par la reverb
-	panner.connect(dryGainNodeGlobal);
+	panner4.connect(dryGainNodeGlobal);
 	dryGainNodeGlobal.connect(context.destination);
 	// Connect dry mix, connect un son sans passer par la reverb
-	panner.connect(dryGainNodeEarly);
+	panner4.connect(dryGainNodeEarly);
 	dryGainNodeEarly.connect(context.destination);
 	// Connect wet mix, connecte un son en passant par la reverb
-	panner.connect(convolverGlobal);
+	panner4.connect(convolverGlobal);
 	convolverGlobal.connect(wetGainNodeGlobal);
 	wetGainNodeGlobal.connect(context.destination);
 	// Connect wet mix, connecte un son en passant par la reverb
-	panner.connect(convolverEarly);
+	panner4.connect(convolverEarly);
 	convolverEarly.connect(wetGainNodeEarly);
 	wetGainNodeEarly.connect(lowFilter);
 	lowFilter.connect(context.destination);
@@ -183,15 +184,15 @@ Jeu4.prototype.init = function() {
      
      
 	// che pas
-	source.playbackRate.value = 1.0;
+	source4.playbackRate.value = 1.0;
 	// positionnement de la source je suppose
-	panner.setPosition(x, y, z);
+	panner4.setPosition(x, y, z);
 	// Load up initial sound
-	setAudioSource(source, 0, fileList4);
+	setAudioSource(source4, 0, fileList4);
 	var currentTime = context.currentTime;
-	source.start(currentTime + 0.020);
+	source4.start(currentTime + 0.020);
 
-	source.onended = function() {
+	source4.onended = function() {
 		relanceSon();
 	}
   
@@ -240,58 +241,58 @@ Jeu4.prototype.init = function() {
 	function relanceSon(){
 	 	
 	 	// Création d'un nouveau buffer pour la source, c'est obligé car un buffer ne peut etre lancé qu'une fois....
-	 	source = context.createBufferSource();
+	 	source4 = context.createBufferSource();
 	 	// On conncete au circuit
-		 source.connect(panner);
+		 source4.connect(panner4);
 
 		
 		//Code pour déterminer quel son lancer
 		
 		// Si le listener est devant la source
 		if (listenery-y > -10 && listenery-y < -5 ){
-			setAudioSource(source, 6, fileList4);
+			setAudioSource(source4, 6, fileList4);
 		}
 		
 		// Si le listener est devant la source très proche
 		if (listenery-y > -5 && listenery-y < -1 ){
-			setAudioSource(source, 7, fileList4);
+			setAudioSource(source4, 7, fileList4);
 		}
 		
 		// Si le listener est derriere la source très proche
 		if (listenery-y > 1 && listenery-y < 5 ){
-			setAudioSource(source, 5, fileList4);
+			setAudioSource(source4, 5, fileList4);
 		}
 		
 		// Si le listener est derriere la source 
 			if (listenery-y > 5 && listenery-y < 10 ){
-			setAudioSource(source, 4, fileList4);
+			setAudioSource(source4, 4, fileList4);
 		}
 		
 		// Si le listener est sur la source 
 			if (trouve==true){
-			setAudioSource(source,9, fileList4);
+			setAudioSource(source4,9, fileList4);
 		}
 		
 		else{
 		
 			// on pioche un nombre aléatoire enter 0 et 3
 			var nb = Math.floor(Math.random() * (3));
-			setAudioSource(source, nb, fileList4);
+			setAudioSource(source4, nb, fileList4);
 		}
 		
 		// On récupère le temps courant et on lance le son avec 2sec de retard pour espacer les différents sons
 	 	var currentTime = context.currentTime;
-	 	source.start(currentTime + 1.5);
+	 	source4.start(currentTime + 1.5);
 	 	//Si le joueur a trouvé on attend la fin du dernier son pour finir le jeu
 	 	if(trouve == true){
-	 		source.onended = function(){
+	 		source4.onended = function(){
 	 			finJeuWin();
 	 		}
 	 	}
 		
 		// Si le joueur n'a pas trouvé la source, on relance un son
 		if (trouve==false){
-			source.onended = function() {
+			source4.onended = function() {
 				 relanceSon();
 			}
 		}
@@ -387,7 +388,8 @@ Jeu4.prototype.instructions = function() {
 	console.log("instructions jeu 4");
 	sonsJeu4Instructions = [
 	"sons/instructions/jeu4.mp3",
-	"sons/instructions/jeu3.mp3"
+	"sons/instructions/jeu3.mp3",
+	"sons/instructions/fin_instructions.mp3"
 	];
 
 	//Création de la source
@@ -406,6 +408,21 @@ Jeu4.prototype.instructions = function() {
 	}
 	
 	source.start();
+	//Fin des instructions
+	source.onended = function(){
+		if(!lancementJeu4){
+		//On lance la phrase de fin d'instruction en boucle
+		//Création de la source
+			source = context.createBufferSource();
+			panner = context.createPanner();
+			//Routing
+			source.connect(panner);
+			panner.connect(context.destination);
+			source.loop = true;
+			setAudioSource(source, 2, sonsJeu4Instructions);
+			source.start();
+		}
+	}
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillText("Instructions jeu 4", canvas.width/2, canvas.height/2);
@@ -428,6 +445,7 @@ Jeu4.prototype.instructions = function() {
 				source.loop = false;
 				//On coupe le son
 				source.stop();
+				lancementJeu4 = true;
 				//On affiche lance le jeu
 				var jeu4 = new Jeu4();
 				jeu4.init();

@@ -2,6 +2,7 @@
 
 
 **/
+var lancementJeu3 = false;
 var Jeu3 = function(){};
 
 Jeu3.prototype.init = function() {
@@ -370,7 +371,8 @@ Jeu3.prototype.instructions = function(){
 console.log("instructions 3");
 	sonsJeu3Instructions = [
 	"sons/instructions/jeu3.mp3",
-	"sons/instructions/jeu2.mp3"
+	"sons/instructions/jeu2.mp3",
+	"sons/instructions/fin_instructions.mp3"
 	];
 
 	//Création de la source
@@ -389,6 +391,21 @@ console.log("instructions 3");
 	}
 	
 	source.start();
+	//Fin des instructions
+	source.onended = function(){
+		if(!lancementJeu3){
+		//On lance la phrase de fin d'instruction en boucle
+		//Création de la source
+			source = context.createBufferSource();
+			panner = context.createPanner();
+			//Routing
+			source.connect(panner);
+			panner.connect(context.destination);
+			source.loop = true;
+			setAudioSource(source, 2, sonsJeu3Instructions);
+			source.start();
+		}
+	}
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillText("Instructions jeu 3", canvas.width/2, canvas.height/2);
@@ -410,6 +427,8 @@ console.log("instructions 3");
 				source.loop = false;
 				//On coupe le son
 				source.stop();
+				//Pour que la fin des instructions ne se lance pas si le jeu est déjà lancé
+				lancementJeu3 = true;
 				//On affiche lance le jeu
 				var jeu3 = new Jeu3();
 				jeu3.init();

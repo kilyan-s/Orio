@@ -1,4 +1,5 @@
 var victoire2 = 0;
+var lancementJeu2 = false;
 var nbSons;
 var ordreSons;
 //TOUCHES
@@ -379,11 +380,14 @@ Jeu2.prototype.init = function() {
 					//On incrément le nb touche que si c'est une touche du jeu
 					nbTouches++;
 					break;
+					case "A":
+						finJeuWin();
 					default:
 						return;
 				}
 			console.log(ordreTouches);
-		//Si l'utilisateur a dejà appuyé sur 6 touches on verifie la séquence
+
+		//Si l'utilisateur a dejà appuyé sur 5 touches on verifie la séquence
 		if(nbTouches >= 5){
 			source.onended = function() {
 				verifSequence();
@@ -423,7 +427,8 @@ Jeu2.prototype.instructions = function() {
 	console.log("instructions jeu 2");
 	sonsJeu2Instructions = [
 	"sons/instructions/jeu2.mp3",
-	"sons/instructions/jeu3.mp3"
+	"sons/instructions/jeu3.mp3",
+	"sons/instructions/fin_instructions.mp3"
 	];
 
 	//Création de la source
@@ -433,7 +438,7 @@ Jeu2.prototype.instructions = function() {
 	source.connect(panner);
 	panner.connect(context.destination);
 
-	source.loop = true;
+	source.loop = false;
 	//On donne les instructions selon le mode de jeu
 	if(mode == 0 ){
 		setAudioSource(source, 0, sonsJeu2Instructions);
@@ -442,6 +447,20 @@ Jeu2.prototype.instructions = function() {
 	}
 	
 	source.start();
+	source.onended = function(){
+		//On lance la phrase de fin d'instruction en boucle
+		//Création de la source
+		if(!lancementJeu2){
+			source = context.createBufferSource();
+			panner = context.createPanner();
+			//Routing
+			source.connect(panner);
+			panner.connect(context.destination);
+			source.loop = true;
+			setAudioSource(source, 2, sonsJeu2Instructions);
+			source.start();
+		}
+	}
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillText("Instructions jeu 2", canvas.width/2, canvas.height/2);
@@ -464,6 +483,8 @@ Jeu2.prototype.instructions = function() {
 				source.loop = false;
 				//On coupe le son
 				source.stop();
+				//Pour que la fin des instructions ne se lance pas si le jeu est déjà lancé
+				lancementJeu1 = true;
 				//On affiche lance le jeu
 				var jeu2 = new Jeu2();
 				jeu2.init();
@@ -471,7 +492,7 @@ Jeu2.prototype.instructions = function() {
 			case "F":
 				console.log("Relire instructions");
 				source.stop();
-				//Création de la source
+				/*//Création de la source
 				source = context.createBufferSource();
 
 				//Routing
@@ -485,7 +506,9 @@ Jeu2.prototype.instructions = function() {
 				}else{
 					setAudioSource(source, 1, sonsJeu2Instructions);
 				}
-				source.start();
+				source.start();*/
+				var jeu2 = new Jeu2();
+				jeu2.instructions();
 				break;
 			default:
 				return;

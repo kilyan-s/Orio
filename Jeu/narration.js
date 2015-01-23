@@ -64,7 +64,7 @@ Narration.prototype.part2 = function(){
 	panner.connect(context.destination);
 
 	source.loop = false;
-	setAudioSource(source, 11, urlListeIntro);
+	setAudioSource(source, 10, urlListeIntro);
 	source.start();
 
 	source.onended = function(){
@@ -86,7 +86,7 @@ Narration.prototype.part3 = function(){
 	panner.connect(context.destination);
 
 	source.loop = false;
-	setAudioSource(source, 13, urlListeIntro);
+	setAudioSource(source, 10, urlListeIntro);
 	source.start();
 
 	source.onended = function(){
@@ -110,7 +110,7 @@ Narration.prototype.part4 = function(){
 	panner.connect(context.destination);
 
 	source.loop = false;
-	setAudioSource(source, 13, urlListeIntro);
+	setAudioSource(source, 10, urlListeIntro);
 	source.start();
 
 	source.onended = function(){
@@ -124,6 +124,7 @@ Narration.prototype.part4 = function(){
 };
 
 Narration.prototype.part5 = function(){
+	// var listener = context.listener;
 	listener.setPosition(0,0,0);
 	panner.setPosition(0,0,0);
 	//Création de la source

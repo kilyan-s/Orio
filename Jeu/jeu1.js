@@ -1,5 +1,6 @@
 var sonsJeu1Instructions;
 var sonRecommencer;
+var lancementJeu1 = false;
 var Jeu1 = function(){};
 
 Jeu1.prototype.init = function() {
@@ -525,7 +526,8 @@ Jeu1.prototype.instructions = function() {
 	console.log("instructions");
 	sonsJeu1Instructions = [
 	"sons/instructions/jeu1.mp3",
-	"sons/instructions/jeu2.mp3"
+	"sons/instructions/jeu2.mp3",
+	"sons/instructions/fin_instructions.mp3"
 	];
 
 	//Création de la source
@@ -535,7 +537,7 @@ Jeu1.prototype.instructions = function() {
 	source.connect(panner);
 	panner.connect(context.destination);
 
-	source.loop = true;
+	source.loop = false;
 	//On donne les instructions selon le mode de jeu
 	if(mode == 0 ){
 		setAudioSource(source, 0, sonsJeu1Instructions);
@@ -544,6 +546,21 @@ Jeu1.prototype.instructions = function() {
 	}
 	
 	source.start();
+	
+	source.onended = function(){
+		if(!lancementJeu1){
+		//On lance la phrase de fin d'instruction en boucle
+		//Création de la source
+			source = context.createBufferSource();
+			panner = context.createPanner();
+			//Routing
+			source.connect(panner);
+			panner.connect(context.destination);
+			source.loop = true;
+			setAudioSource(source, 2, sonsJeu1Instructions);
+			source.start();
+		}
+	}
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillText("Instructions jeu 1", canvas.width/2, canvas.height/2);
@@ -562,9 +579,12 @@ Jeu1.prototype.instructions = function() {
 				//On retire l'event listener
 				window.removeEventListener("keydown", keyboardInstruction1);
 				//On arrete de looper le son
-				source.loop = false;
+				source.loop = false; 
 				//On coupe le son
 				source.stop();
+				//Pour que la fin des instructions ne se lance pas si le jeu est déjà lancé
+				lancementJeu1 = true;
+
 				//On affiche lance le jeu
 				var jeu1 = new Jeu1();
 				jeu1.init();
@@ -572,6 +592,7 @@ Jeu1.prototype.instructions = function() {
 			case "F":
 				console.log("Relire instructions");
 				source.stop();
+				/*
 				//Création de la source
 				source = context.createBufferSource();
 
@@ -579,14 +600,17 @@ Jeu1.prototype.instructions = function() {
 				source.connect(panner);
 				panner.connect(context.destination);
 
-				source.loop = true;
+				source.loop = false;
 				//On donne les instructions selon le mode de jeu
 				if(mode == 0 ){
 					setAudioSource(source, 0, sonsJeu1Instructions);
 				}else{
 					setAudioSource(source, 1, sonsJeu1Instructions);
 				}
-				source.start();
+				source.start();*/
+
+				var jeu1 = new Jeu1();
+				jeu1.instructions();
 				break;
 			default:
 				return;
