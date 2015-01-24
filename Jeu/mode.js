@@ -1,6 +1,27 @@
+var bgImg = new Image();
+bgImg.src = "img/menu/bg.svg"
 var ModeJeu = function(){
 
 };
+/*
+*
+*	CHOIX MODE DE JEU
+*
+*/
+function afficherMode(){
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.drawImage(bgImg, 0, 0);
+	ctx.font = "bold 16px Arial";
+	ctx.textAlign = 'center';
+ 	ctx.fillText("Choisissez un mode de jeu", canvas.width/2, canvas.height/2);
+
+ 	ctx.fillText("F: 1 joueur", canvas.width/3, canvas.height/1.5);
+	ctx.fillText("J: 2 joueurs", 2*canvas.width/3, canvas.height/1.5);
+	//Fichier modejeu.js
+	mode = new ModeJeu;
+	mode.init();
+	console.log(mode);
+}
 
 ModeJeu.prototype.init = function(){
 
@@ -92,6 +113,8 @@ ModeJeu.prototype.init = function(){
 
 			//On vide le canvas
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			ctx.drawImage(bgImg, 0, 0);
 			//On affiche le nouveau message
 			ctx.fillText("Vous avez choisis le mode 1 joueur", canvas.width/2, canvas.height/2);
 			ctx.fillText("F: 1 joueur", canvas.width/3, canvas.height/1.5);
@@ -111,9 +134,10 @@ ModeJeu.prototype.init = function(){
 			setAudioSource(source, 2, sonsMode);
 			source.start();
 
-
 			//On vide le canvas
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			ctx.drawImage(bgImg, 0, 0);
 			//On affiche le nouveau message
 			ctx.fillText("Vous avez choisis le mode 2 joueurs", canvas.width/2, canvas.height/2);
 			ctx.fillText("F: 1 joueur", canvas.width/3, canvas.height/1.5);

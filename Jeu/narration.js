@@ -10,16 +10,16 @@ Narration.prototype.init = function(){
 		"sons/narration/part3.mp3",
 		"sons/narration/part4.mp3",
 		"sons/narration/part5.mp3",
-		"sons/narration/part6.mp3",
+		"sons/narration/part6_1_pierre_garder.mp3",
+		"sons/narration/part6_1_pierre_jeter.mp3",
 		"sons/narration/part7.mp3",
+		"sons/narration/part7_2_pierre_garder.mp3",
+		"sons/narration/part7_2_pierre_jeter.mp3",
+		"sons/narration/part7_2_pierre_rien.mp3",
 		"sons/narration/choixpierre.mp3",
-		"sons/narration/1_pierre_garder.mp3",
-		"sons/narration/1_pierre_jeter.mp3",
-		"sons/narration/2_pierre_garder.mp3",
-		"sons/narration/2_pierre_jeter.mp3",
-		"sons/narration/2_pierre_rien.mp3",
-		"sons/narration/fin1.mp3",
-		"sons/narration/fin2.mp3",
+		"sons/narration/part8.mp3",
+		"sons/narration/part9_bien.mp3",
+		"sons/narration/part9_pas_bien.mp3"
 	];
 	console.log("intro");
 

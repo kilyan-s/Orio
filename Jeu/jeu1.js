@@ -1,9 +1,14 @@
 var sonsJeu1Instructions;
 var sonRecommencer;
 var lancementJeu1 = false;
+
+var sourceVie, sourceFond, sourceTouche;
+var pannerVie, pannerFond, pannerTouche;
 var Jeu1 = function(){};
 
 Jeu1.prototype.init = function() {
+	//On utilise x pour eviter que le son derniereVie se joue à chaque frame
+	var x = 0;
 	context;
 	var buffer;
 
@@ -22,6 +27,7 @@ Jeu1.prototype.init = function() {
 	var canvas = document.getElementById("canvas");
 	var ctx = canvas.getContext("2d");
 	var background = document.getElementById("bg");
+	background.src = "img/jeu1/anime.gif";
 	background.style.visibility = "visible";
 
 
@@ -69,7 +75,7 @@ Jeu1.prototype.init = function() {
 	var depY = 5;
 	var depZ = 0;
 
-	var tabDeplacement = [[-1,5],[0,5],[1,5]];
+	var tabDeplacement = [[-1,5],[0,5],[1.2,5]];
 
 	//Si collision
 	var collision = false;
@@ -80,8 +86,13 @@ Jeu1.prototype.init = function() {
 	//Délai entre chaque obstacle
 	var delai = 1.5;
 	var fileList = [
-		"white-noise-long.wav",
-		"sons/commun/recommencer.mp3"
+		"sons/jeu1/obstacle.wav",
+		"sons/jeu1/musiqueFond.wav",
+		"sons/jeu1/derniereVie.mp3",
+		"sons/jeu1/toucheMur.wav",
+		"sons/commun/perdu.mp3",
+		"sons/commun/recommencer.mp3",
+		"sons/jeu1/succes.mp3"
 	];
 	//Interval pour l'animation
 	var interval;
@@ -103,7 +114,7 @@ Jeu1.prototype.init = function() {
 	zoneMilieu = {
 		x: 50,
 		y: listenery,
-		taille: 20 
+		taille: 15 
 	};
 	zoneDroite = {
 		x: 72,
@@ -116,7 +127,7 @@ Jeu1.prototype.init = function() {
 		x: 333,
 		y:364,
 		dep: 277,
-		url: "img/perso.svg"
+		url: "img/jeu1/perso.svg"
 	}
 
 	/////// Perso
@@ -125,8 +136,14 @@ Jeu1.prototype.init = function() {
 
 	var vie = 3;
 	var coeur = new Image();
-	coeur.src = "img/vie.svg"
+	coeur.src = "img/jeu1/vie.svg"
 
+	  console.log("listener x: " + listenerx);
+	  console.log("listener y: " + listenery);
+	  console.log("zone droite x: " + zoneDroite.x);
+	  console.log("zone Droite x + taille: " + (zoneDroite.x  + zoneDroite.taille));
+	  console.log("obstacle x: " + obstaclex);
+	  console.log("obstacle y: " + obstacley);
 	/*
 	*	Start panning
 	* init
@@ -148,6 +165,7 @@ Jeu1.prototype.init = function() {
 
 	//Création de la source
 	source = context.createBufferSource();
+	sourceFond = context.createBufferSource();
 
 	//Création du panner
 	panner = context.createPanner();
@@ -186,21 +204,50 @@ Jeu1.prototype.init = function() {
 
 	// Connect dry mix, connect un son sans passer par la reverb
 	panner.connect(dryGainNodeGlobal);
-	dryGainNodeGlobal.connect(context.destination);
+	dryGainNodeGlobal.connect(gain);
 	// Connect dry mix, connect un son sans passer par la reverb
 	panner.connect(dryGainNodeEarly);
-	dryGainNodeEarly.connect(context.destination);
+	dryGainNodeEarly.connect(gain);
 
 	// Connect wet mix, connecte un son en passant par la reverb
 	panner.connect(convolverGlobal);
 	convolverGlobal.connect(wetGainNodeGlobal);
-	wetGainNodeGlobal.connect(context.destination);
+	wetGainNodeGlobal.connect(gain);
 
 	// Connect wet mix, connecte un son en passant par la reverb
 	panner.connect(convolverEarly);
 	convolverEarly.connect(wetGainNodeEarly);
 	wetGainNodeEarly.connect(lowFilter);
-	lowFilter.connect(context.destination);
+	lowFilter.connect(gain);
+
+	gain.connect(context.destination);
+
+	/**
+
+		Routing derniereVie, mur touché et fond
+
+	**/
+	pannerVie = context.createPanner();
+	pannerFond = context.createPanner();
+	pannerTouche = context.createPanner();
+	pannerFond = context.createPanner();
+
+	var gainFond = context.createGain();
+	gainFond.gain.value = -0;
+
+	pannerVie.setPosition(listenerx, listenery, 0);
+	pannerFond.setPosition(listenerx, listenery, 0);
+	pannerTouche.setPosition(listenerx, listenery, 0);
+	pannerFond.setPosition(listenerx, listenery + 10, 0);
+
+	pannerVie.connect(gain);
+	pannerFond.connect(gain);
+	pannerTouche.connect(gain);
+	gain.connect(context.destination);
+
+	sourceFond.connect(pannerFond);
+	pannerFond.connect(gainFond);
+	gainFond.connect(context.destination);
 
 	//Code pour faire apparaitre plus ou moins de reverb
 	cL = listenery + listenerx;
@@ -224,6 +271,10 @@ Jeu1.prototype.init = function() {
 
 	// console.log(panner);
 	source.playbackRate.value = 1.0;
+	//Musique de fond
+	setAudioSource(sourceFond, 1, fileList);
+	sourceFond.loop = true;
+	sourceFond.start();
 
 	// console.log(source);
 	//Chargement du son initial
@@ -278,7 +329,6 @@ Jeu1.prototype.init = function() {
 			var alea = Math.floor((Math.random() * 30));
 			alea = Math.floor((alea/10));
 			// console.log("alea: "+alea);
-
 			//On affecte les valeurs de déplacement
 			depX = tabDeplacement[alea][0];
 			depY = tabDeplacement[alea][1];
@@ -307,6 +357,7 @@ Jeu1.prototype.init = function() {
 		obstaclez += depZ;
 
 		testCollision();
+		// console.log(obstaclex);
 		//Si l'obastacle est à 15 devant ou derniere le listener on le fait se deplacer plus vite pour eviter d'avoir un son trop fort au moment ou il est pile sur le listener
 		/*if(obstacley <= listenery+15 && obstacley >= listenery-15 && obstaclex == listenerx){
 			console.log("toto");
@@ -353,6 +404,18 @@ Jeu1.prototype.init = function() {
 
 		if (vie == 1) {
 			ctx.drawImage(coeur, 700, 30);
+			//On utilise x sinon le son ce joue à chaque frame
+			if(x == 0){
+				//Son derniere vie
+				sourceVie = context.createBufferSource();
+				sourceVie.connect(pannerVie);
+				pannerVie.setPosition(listenerx ,listenery+10 ,0);
+				//On choisi le son à jouer
+				setAudioSource(sourceVie, 2, fileList);
+			 	sourceVie.start();
+			 	x++;
+			}
+			
 		}
 
 		if (vie == 0) {
@@ -372,41 +435,25 @@ Jeu1.prototype.init = function() {
 	*******/
 	function testCollision(){
 		//Collision zone gauche
-		if(obstaclex <= (zoneGauche.x + zoneGauche.taille) && obstacley <= zoneGauche.y && listenerx <= (zoneGauche.x + zoneGauche.taille) && listenery == zoneGauche.y) {
-			// console.log(obstaclex);
-			// console.log(obstacley);
-			// console.log(listenerx);
-			// console.log(listenery);
-			// console.log("Collision zone gauche");
-			//collision = true;
+		if(obstaclex >= zoneGauche.x && obstaclex <= (zoneGauche.x + zoneGauche.taille) && obstacley == listenery && obstacley <= (zoneGauche.y + zoneGauche.taille) && listenerx >= zoneGauche.x && listenerx <= (zoneGauche.x + zoneGauche.taille)) {
+			// console.log("COLLISION ZONE GAUCHE");
 			//On incrémente le compteur pour tester les collisons afin d'effectuer une seule fois l'update vie
 			i++;
 			updateVie(i);
 		}
 
 		//Collision zone Milieu
-		if(obstaclex == (zoneMilieu.x) && obstacley <= zoneMilieu.y && listenerx == (zoneMilieu.x) && listenery <= zoneMilieu.y) {
-			// console.log(obstaclex);
-			// console.log(obstacley);
-			// console.log(listenerx);
-			// console.log(listenery);
-			// console.log("Collision zone milieu");
-			//collision = true;
+		if(obstaclex >= zoneMilieu.x && obstaclex <= (zoneMilieu.x + zoneMilieu.taille) && obstacley == listenery && obstacley <= (zoneMilieu.y + zoneMilieu.taille) && listenerx >= zoneMilieu.x && listenerx <= (zoneMilieu.x + zoneMilieu.taille)) {
 			//On incrémente le compteur pour tester les collisons afin d'effectuer une seule fois l'update vie
+			// console.log("COLLISION ZONE MILIEU");
 			i++;
 			updateVie(i);
 		}
 
 		//Collision zone droite
-		if(obstaclex >= zoneDroite.x  && obstacley <= zoneDroite.y && listenerx >= zoneDroite.x && listenery == zoneDroite.y) {
-			// console.log(obstaclex);
-			// console.log(obstacley);
-			// console.log(listenerx);
-			// console.log(listenery);
-			console.log("Collision zone droite");
-			//collision = true;
-			//console.log("zone droite: "+i);
+		if(obstaclex >= zoneDroite.x && obstaclex <= (zoneDroite.x + zoneDroite.taille) && obstacley == listenery && obstacley <= (zoneDroite.y + zoneDroite.taille) && listenerx >= zoneDroite.x && listenerx <= (zoneDroite.x + zoneDroite.taille)) {
 			//On incrémente le compteur pour tester les collisons afin d'effectuer une seule fois l'update vie
+			// console.log("COLLISION ZONE DROITE");
 			i++;
 			updateVie(i);
 		}
@@ -436,22 +483,36 @@ Jeu1.prototype.init = function() {
 	 	ctx.fillText("Vous avez perdu !", canvas.width/2, canvas.height/2);
 	 	ctx.fillText("Appuyez sur espace pour relancer le jeu!", canvas.width/2, canvas.height/3);
 	 	console.log("Jeu Lose");
-	 	console.log(nbObstacles);
 
+	 	console.log(nbObstacles);
+	 	//Repositionne le listener et le panner
+	 	listenerx = 50;
+	 	listenery = 20;
+	 	listener.setPosition(listenerx,listenery,0);
 	 	//On arrete le son si il est en train de jouer
 	 	source.stop();
 	 	//Création de la source
 		sonRecommencer = context.createBufferSource();
+		lancementJeu1 = false;
+		var pannerRecommencer = context.createPanner();
+		pannerRecommencer.connect(gain);
+		//Son "Vous avez perdu"
+		sonRecommencer.connect(pannerRecommencer);
+		pannerRecommencer.setPosition(listenerx, listenery + 10, 0);
 
-		//Routing
-		sonRecommencer.connect(panner);
-		panner.connect(gain);
-		gain.connect(context.destination);
-
-		sonRecommencer.loop = true;
-		setAudioSource(sonRecommencer, 1, fileList);
+		sonRecommencer.loop = false;
+		setAudioSource(sonRecommencer, 4, fileList);
 		sonRecommencer.start();
-
+		//Son "appuyer sur espace pour recommencer"
+		sonRecommencer.onended = function(){
+			//Création de la source
+			sonRecommencer = context.createBufferSource();
+			sonRecommencer.connect(pannerRecommencer);
+			pannerRecommencer.setPosition(listenerx, listenery + 10, 0);
+			sonRecommencer.loop = true;
+			setAudioSource(sonRecommencer, 5, fileList);
+			sonRecommencer.start();
+		}
 	 	victoire1 = 0;
 	}
 
@@ -461,17 +522,27 @@ Jeu1.prototype.init = function() {
 		ctx.textAlign = 'center';
 	 	ctx.fillText("Félicitiation vous avez évité tous les obstacles !", canvas.width/2, canvas.height/2);
 	 	console.log("Jeu Win");
-
+	 	sourceFond.loop = false;
+	 	sourceFond.stop();
 	 	victoire1 = 1;
 	 	//On retire l'event listener pour arreter les déplacements du joueur
-	 	window.removeEventListener("keydown", verifKey1);
+		window.removeEventListener("keydown", verifKey1);
 	 	//On réinitialise la position du lsitener et du panner
 	 	listener.setPosition(0,0,0);
 	 	panner.setPosition(0,0,0);
 	 	//Lancement de la 2e partie de narration
-	 	var narration = new Narration();
-	 	narration.init();
-	 	narration.part2();
+	 	var sourceSucces = context.createBufferSource();
+	 	var pannerSucces = context.createPanner();
+	 	sourceSucces.connect(pannerSucces);
+	 	pannerSucces.connect(context.destination);
+	 	setAudioSource(sourceSucces, 6, fileList);
+	 	sourceSucces.start();
+
+	 	sourceSucces.onended = function(){
+	 		var narration = new Narration();
+		 	narration.init();
+		 	narration.part2();
+	 	}
 	}
 
 	/*******
@@ -480,16 +551,28 @@ Jeu1.prototype.init = function() {
 
 	*******/
 	function verifKey1(event){
+		console.log("VERIFKEY1");
 		touche = String.fromCharCode(event.keyCode);
 		switch(touche){
 			case "F":
 			//On verifie la position du listener avant de le deplacer
 				if(listenerx > 28){
 					listenerx -= 22;
-					console.log(listenerx);
+					// console.log(listenerx);
 					listener.setPosition(listenerx, listenery, listenerz);
+					pannerFond.setPosition(listenerx, listenery + 10, listenerz);
 					perso.x -= perso.dep;
 					console.log(perso.x);
+				}else{
+					//Déplacement interdit
+					// sourceTouche.stop();
+					//Son derniere vie
+					sourceTouche = context.createBufferSource();
+					sourceTouche.connect(pannerTouche);
+					pannerTouche.setPosition(listenerx-10, listenery, 0);
+					//On choisi le son à jouer
+					setAudioSource(sourceTouche, 3, fileList);
+				 	sourceTouche.start();
 				}
 				break;
 			case "J":
@@ -498,8 +581,19 @@ Jeu1.prototype.init = function() {
 					listenerx += 22;
 					console.log(listenerx);
 					listener.setPosition(listenerx, listenery, listenerz);
+					pannerFond.setPosition(listenerx, listenery + 10, listenerz);
 					perso.x += perso.dep;
 					console.log(perso.x);
+				}else{
+					//Déplacement interdit
+					// sourceTouche.stop();
+					//Son derniere vie
+					sourceTouche = context.createBufferSource();
+					sourceTouche.connect(pannerTouche);
+					pannerTouche.setPosition(listenerx+10, listenery, 0);
+					//On choisi le son à jouer
+					setAudioSource(sourceTouche, 3, fileList);
+				 	sourceTouche.start();
 				}
 				break;
 			//relancer le jeu ou passer à la suite
@@ -509,6 +603,10 @@ Jeu1.prototype.init = function() {
 					//Arrete le son "recommencer le jeu"
 					sonRecommencer.loop = false;
 					sonRecommencer.stop();
+					sourceFond.loop = false;
+					sourceFond.stop();
+
+					window.removeEventListener("keydown", verifKey1);
 					//console.log(jeu);
 					var jeu = new Jeu1();
 					jeu.init();
@@ -526,7 +624,7 @@ Jeu1.prototype.instructions = function() {
 	console.log("instructions");
 	sonsJeu1Instructions = [
 	"sons/instructions/jeu1.mp3",
-	"sons/instructions/jeu2.mp3",
+	"sons/instructions/jeu12j.mp3",
 	"sons/instructions/fin_instructions.mp3"
 	];
 
@@ -538,29 +636,56 @@ Jeu1.prototype.instructions = function() {
 	panner.connect(context.destination);
 
 	source.loop = false;
+	setAudioSource(source, 0, sonsJeu1Instructions);
 	//On donne les instructions selon le mode de jeu
 	if(mode == 0 ){
-		setAudioSource(source, 0, sonsJeu1Instructions);
+		source.start();
+		source.onended = function(){
+			if(!lancementJeu1){
+			//On lance la phrase de fin d'instruction en boucle
+			//Création de la source
+				source = context.createBufferSource();
+				panner = context.createPanner();
+				//Routing
+				source.connect(panner);
+				panner.connect(context.destination);
+				source.loop = true;
+				setAudioSource(source, 2, sonsJeu1Instructions);
+				source.start();
+				console.log("FIN JEU INSTRUCTIONS");
+			}
+		}
 	}else{
-		setAudioSource(source, 1, sonsJeu1Instructions);
-	}
-	
-	source.start();
-	
-	source.onended = function(){
-		if(!lancementJeu1){
-		//On lance la phrase de fin d'instruction en boucle
-		//Création de la source
+		source.start();
+		source.onended = function(){
+			//Création de la source
 			source = context.createBufferSource();
 			panner = context.createPanner();
 			//Routing
 			source.connect(panner);
 			panner.connect(context.destination);
-			source.loop = true;
-			setAudioSource(source, 2, sonsJeu1Instructions);
+			source.loop = false;
+			setAudioSource(source, 1, sonsJeu1Instructions);
 			source.start();
+			console.log("INSTRUCTIONS 2J");
+			source.onended = function(){
+				if(!lancementJeu1){
+				//On lance la phrase de fin d'instruction en boucle
+				//Création de la source
+					source = context.createBufferSource();
+					panner = context.createPanner();
+					//Routing
+					source.connect(panner);
+					panner.connect(context.destination);
+					source.loop = true;
+					setAudioSource(source, 2, sonsJeu1Instructions);
+					source.start();
+					console.log("FIN JEU INSTRUCTIONS");
+				}
+			}
 		}
 	}
+	
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillText("Instructions jeu 1", canvas.width/2, canvas.height/2);

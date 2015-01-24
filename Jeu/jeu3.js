@@ -215,6 +215,7 @@ function finJeuWin(){
 
 function finJeuLose(){
 	window.addEventListener("keydown", keyboardJeu3Relancer, false);
+	lancementJeu3 = false;
 	//On arrete le son si il est en train de jouer
  	source.stop();
  	panner.setPosition(0,0,0);

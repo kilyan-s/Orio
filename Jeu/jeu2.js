@@ -157,6 +157,7 @@ Jeu2.prototype.init = function() {
 	 	ctx.fillText("Vous avez perdu !", canvas.width/2, canvas.height/2);
 	 	ctx.fillText("Appuyez sur espace pour relancer le jeu!", canvas.width/2, canvas.height/3);
 	 	console.log("Jeu Lose");
+	 	lancementJeu2 = false;
 
 	 	/*console.log("ordres touches length: " + ordreTouches.length);
 	 	//Vider le tableau ordresTouches, sinon les touches continuent à s'ajouter et le tableau est trop long
@@ -459,6 +460,8 @@ Jeu2.prototype.instructions = function() {
 			source.loop = true;
 			setAudioSource(source, 2, sonsJeu2Instructions);
 			source.start();
+
+			console.log("FIN JEU INSTRUCTIONS 2");
 		}
 	}
 
@@ -477,6 +480,7 @@ Jeu2.prototype.instructions = function() {
 		switch(touche){
 			case " ":
 				console.log("Lancer Jeu");
+				//Pour que la fin des instructions ne se lance pas si le jeu est déjà lancé
 				//On retire l'event listener
 				window.removeEventListener("keydown", keyboardInstruction2);
 				//On arrete de looper le son
@@ -484,7 +488,7 @@ Jeu2.prototype.instructions = function() {
 				//On coupe le son
 				source.stop();
 				//Pour que la fin des instructions ne se lance pas si le jeu est déjà lancé
-				lancementJeu1 = true;
+				lancementJeu2 = true;
 				//On affiche lance le jeu
 				var jeu2 = new Jeu2();
 				jeu2.init();

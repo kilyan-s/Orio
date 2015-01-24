@@ -7,10 +7,13 @@ Casque.prototype.init = function(){
 	"sons/casque/casque.mp3"
 	];
 
+	var casqueImg = new Image();
+	casqueImg.src = "img/narration/casque.svg"
 	//On vide le canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillText("Veuillez-vous munir d'un casque !", canvas.width/2, canvas.height/2);
-	ctx.fillText("Appuyez sur espace pour continuer !", canvas.width/2, 2.5*canvas.height/4);
+	ctx.drawImage(casqueImg, 0, 0);
+	// ctx.fillText("Veuillez-vous munir d'un casque !", canvas.width/2, canvas.height/2);
+	// ctx.fillText("Appuyez sur espace pour continuer !", canvas.width/2, 2.5*canvas.height/4);
 
 	window.addEventListener("keydown", keyboardCasque, false);
 
