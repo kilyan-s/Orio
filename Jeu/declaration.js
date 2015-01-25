@@ -82,6 +82,45 @@ function setAudioSource(chooseSource, i, tab) {
     }
 }
 
+// Permet de changer le son de la source pour le jeu 2 car les sons sont déjà spatialisées et si on les met en mono ca ne fonctionne plus
+function setAudioSource2(chooseSource, i, tab) {
+    // bufferList = new Array(tab.length);
+    // for (var i = 0; i< tab.length; i++){
+    //     bufferList = 0;
+    // }
+
+    var buffer = bufferList[i];
+
+    // See if we have cached buffer
+    if (buffer) {
+        chooseSource.buffer = buffer;
+    } else {
+        // Load asynchronously
+        var url = tab[i];
+
+        var request = new XMLHttpRequest();
+        request.open("GET", url, true);
+        request.responseType = "arraybuffer";
+
+        request.onload = function() { 
+            context.decodeAudioData(
+                request.response,
+                function(buffer) {
+                    // mixToMono(buffer);
+                    chooseSource.buffer = buffer;
+                    bufferList[i] = buffer;  // cache it
+                },
+
+                function(buffer) {
+                    // console.log("Error decoding audio source data!");
+                }
+            );
+        }
+
+        request.send();
+    }
+}
+
 // Permet de convertir les sons qui sont en stéréo en mono, en effet, la spatialisation ne marche bien qu'avec des sons en mono
 function mixToMono(buffer) {
     if (buffer.numberOfChannels == 2) {

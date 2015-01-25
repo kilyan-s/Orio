@@ -61,8 +61,8 @@ Jeu3.prototype.init = function() {
 	panner = context.createPanner();
 	listener = context.listener;
 
-	panner.setPosition(50,30,0);
-	listener.setPosition(50,10,0);
+	panner.setPosition(0,10,0);
+	listener.setPosition(0,0,0);
 
 	/*source.connect(panner);
 	panner.connect(context.destination);*/
@@ -218,7 +218,7 @@ function finJeuLose(){
 	lancementJeu3 = false;
 	//On arrete le son si il est en train de jouer
  	source.stop();
- 	panner.setPosition(0,0,0);
+ 	panner.setPosition(0,5,0);
  	listener.setPosition(0,0,0);
  	//Création de la source
 	sonRecommencer = context.createBufferSource();
@@ -372,7 +372,7 @@ Jeu3.prototype.instructions = function(){
 console.log("instructions 3");
 	sonsJeu3Instructions = [
 	"sons/instructions/jeu3.mp3",
-	"sons/instructions/jeu2.mp3",
+	"sons/instructions/jeu32j.mp3",
 	"sons/instructions/fin_instructions.mp3"
 	];
 
@@ -383,30 +383,60 @@ console.log("instructions 3");
 	source.connect(panner);
 	panner.connect(context.destination);
 
-	source.loop = true;
+	source.loop = false;
+	setAudioSource(source, 0, sonsJeu3Instructions);
 	//On donne les instructions selon le mode de jeu
 	if(mode == 0 ){
-		setAudioSource(source, 0, sonsJeu3Instructions);
-	}else{
-		setAudioSource(source, 1, sonsJeu3Instructions);
-	}
-	
-	source.start();
-	//Fin des instructions
-	source.onended = function(){
-		if(!lancementJeu3){
-		//On lance la phrase de fin d'instruction en boucle
-		//Création de la source
-			source = context.createBufferSource();
-			panner = context.createPanner();
-			//Routing
-			source.connect(panner);
-			panner.connect(context.destination);
-			source.loop = true;
-			setAudioSource(source, 2, sonsJeu3Instructions);
-			source.start();
+		source.start();
+		source.onended = function(){
+			//On lance la phrase de fin d'instruction en boucle
+			//Création de la source
+			if(!lancementJeu3){
+				source = context.createBufferSource();
+				panner = context.createPanner();
+				//Routing
+				source.connect(panner);
+				panner.connect(context.destination);
+				source.loop = true;
+				setAudioSource(source, 2, sonsJeu3Instructions);
+				source.start();
+
+				console.log("FIN JEU 3 INSTRUCTIONS");
+			}
 		}
-	}
+	}else{
+		source.start();
+		source.onended = function(){
+			if(!lancementJeu3){
+				//Création de la source
+				source = context.createBufferSource();
+				panner = context.createPanner();
+				panner.setPosition(0, 2, 0);
+				//Routing
+				source.connect(panner);
+				panner.connect(context.destination);
+				source.loop = false;
+				setAudioSource(source, 1, sonsJeu3Instructions);
+				source.start();
+				console.log("INSTRUCTIONS 2J");
+				source.onended = function(){
+					if(!lancementJeu3){
+					//On lance la phrase de fin d'instruction en boucle
+					//Création de la source
+						source = context.createBufferSource();
+						panner = context.createPanner();
+						//Routing
+						source.connect(panner);
+						panner.connect(context.destination);
+						source.loop = true;
+						setAudioSource(source, 2, sonsJeu3Instructions);
+						source.start();
+						console.log("FIN JEU INSTRUCTIONS");
+					}
+				}
+			}
+		}
+	}	
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillText("Instructions jeu 3", canvas.width/2, canvas.height/2);

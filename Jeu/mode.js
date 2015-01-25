@@ -18,8 +18,10 @@ function afficherMode(){
  	ctx.fillText("F: 1 joueur", canvas.width/3, canvas.height/1.5);
 	ctx.fillText("J: 2 joueurs", 2*canvas.width/3, canvas.height/1.5);
 	//Fichier modejeu.js
-	mode = new ModeJeu;
+	mode = new ModeJeu();
 	mode.init();
+	
+
 	console.log(mode);
 }
 

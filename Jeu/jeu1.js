@@ -302,7 +302,7 @@ Jeu1.prototype.init = function() {
 		
 
 	function relanceSon(){
-		if(nbObstacles >= 2 && vie != 0){
+		if(nbObstacles >= 10 && vie != 0){
 			source.stop();
 			clearInterval(interval);
 			finJeuWin();
@@ -529,7 +529,7 @@ Jeu1.prototype.init = function() {
 		window.removeEventListener("keydown", verifKey1);
 	 	//On réinitialise la position du lsitener et du panner
 	 	listener.setPosition(0,0,0);
-	 	panner.setPosition(0,0,0);
+	 	panner.setPosition(0,2,0);
 	 	//Lancement de la 2e partie de narration
 	 	var sourceSucces = context.createBufferSource();
 	 	var pannerSucces = context.createPanner();
@@ -543,6 +543,7 @@ Jeu1.prototype.init = function() {
 		 	narration.init();
 		 	narration.part2();
 	 	}
+	 	sourceFond = null;
 	}
 
 	/*******
@@ -658,29 +659,32 @@ Jeu1.prototype.instructions = function() {
 	}else{
 		source.start();
 		source.onended = function(){
-			//Création de la source
-			source = context.createBufferSource();
-			panner = context.createPanner();
-			//Routing
-			source.connect(panner);
-			panner.connect(context.destination);
-			source.loop = false;
-			setAudioSource(source, 1, sonsJeu1Instructions);
-			source.start();
-			console.log("INSTRUCTIONS 2J");
-			source.onended = function(){
-				if(!lancementJeu1){
-				//On lance la phrase de fin d'instruction en boucle
+			if(!lancementJeu1){
 				//Création de la source
-					source = context.createBufferSource();
-					panner = context.createPanner();
-					//Routing
-					source.connect(panner);
-					panner.connect(context.destination);
-					source.loop = true;
-					setAudioSource(source, 2, sonsJeu1Instructions);
-					source.start();
-					console.log("FIN JEU INSTRUCTIONS");
+				source = context.createBufferSource();
+				panner = context.createPanner();
+				panner.setPosition(0, 2, 0);
+				//Routing
+				source.connect(panner);
+				panner.connect(context.destination);
+				source.loop = false;
+				setAudioSource(source, 1, sonsJeu1Instructions);
+				source.start();
+				console.log("INSTRUCTIONS 2J");
+				source.onended = function(){
+					if(!lancementJeu1){
+					//On lance la phrase de fin d'instruction en boucle
+					//Création de la source
+						source = context.createBufferSource();
+						panner = context.createPanner();
+						//Routing
+						source.connect(panner);
+						panner.connect(context.destination);
+						source.loop = true;
+						setAudioSource(source, 2, sonsJeu1Instructions);
+						source.start();
+						console.log("FIN JEU INSTRUCTIONS");
+					}
 				}
 			}
 		}

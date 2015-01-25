@@ -30,6 +30,11 @@ Casque.prototype.init = function(){
 
 	//Création du panner
 	panner = context.createPanner();
+	listener = context.listener;
+	//Position panner
+	panner.setPosition(0, 2, 0);
+	//Position listener
+	listener.setPosition(0, 0, 0);
 	/*gain = context.createGain();
 	gain.gain.value = 10;*/
 	//Routing

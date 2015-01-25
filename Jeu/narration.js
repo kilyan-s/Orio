@@ -34,9 +34,14 @@ Narration.prototype.part1 = function(){
 	//Création de la source
 	source = context.createBufferSource();
 
+
 	//Routing
 	source.connect(panner);
 	panner.connect(context.destination);
+	//Position panner
+	panner.setPosition(0, 2, 0);
+	//Position listener
+	listener.setPosition(0, 0, 0);
 
 	source.loop = false;
 	setAudioSource(source, 10, urlListeIntro);
@@ -59,6 +64,10 @@ Narration.prototype.part2 = function(){
 	//Création de la source
 	source = context.createBufferSource();
 	panner = context.createPanner();
+	//Position panner
+	panner.setPosition(0, 2, 0);
+	//Position listener
+	listener.setPosition(0, 0, 0);
 	//Routing
 	source.connect(panner);
 	panner.connect(context.destination);
@@ -84,6 +93,10 @@ Narration.prototype.part3 = function(){
 	//Routing
 	source.connect(panner);
 	panner.connect(context.destination);
+	//Position panner
+	panner.setPosition(0, 2, 0);
+	//Position listener
+	listener.setPosition(0, 0, 0);
 
 	source.loop = false;
 	setAudioSource(source, 10, urlListeIntro);
@@ -100,8 +113,10 @@ Narration.prototype.part3 = function(){
 };
 
 Narration.prototype.part4 = function(){
-	listener.setPosition(0,0,0);
-	panner.setPosition(0,0,0);
+	//Position panner
+	panner.setPosition(0, 2, 0);
+	//Position listener
+	listener.setPosition(0, 0, 0);
 	//Création de la source
 	source = context.createBufferSource();
 	panner = context.createPanner();
@@ -125,8 +140,10 @@ Narration.prototype.part4 = function(){
 
 Narration.prototype.part5 = function(){
 	// var listener = context.listener;
-	listener.setPosition(0,0,0);
-	panner.setPosition(0,0,0);
+	//Position panner
+	panner.setPosition(0, 2, 0);
+	//Position listener
+	listener.setPosition(0, 0, 0);
 	//Création de la source
 	source  = context.createBufferSource();
 	panner = context.createPanner();

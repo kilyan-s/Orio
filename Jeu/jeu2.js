@@ -22,7 +22,7 @@ var Jeu2 = function(){};
 
 Jeu2.prototype.init = function() {
 	//ctx.clearRect(0, 0, canvas.width, canvas.height);
-	
+
 	//SONS
 	nbSons = 0;
 	ordreSons = [];
@@ -31,12 +31,16 @@ Jeu2.prototype.init = function() {
 	ordreTouches = [];
 	//Fichiers sons
 	var fileList2 = [
-		"white-noise.wav", 
-		"",
-		"",
-		"",
-		"",
-		"sons/commun/recommencer.mp3"
+		"sons/jeu2/g2.wav", 
+		"sons/jeu2/g1.wav",
+		"sons/jeu2/centre.wav",
+		"sons/jeu2/d1.wav",
+		"sons/jeu2/d2.wav",
+		"sons/jeu2/succes.wav",
+		"sons/jeu2/percute.wav",
+		"sons/jeu2/ambiance.wav",
+		"sons/commun/recommencer.mp3",
+		"sons/jeu2/alasuite.wav"
 	];
 
 	/******
@@ -61,20 +65,38 @@ Jeu2.prototype.init = function() {
 	*******/
 	//Création source & panner & listener
 	source = context.createBufferSource();
+	//On ne lance le son de fond qu'une fois sinon il ne s'arrete pas
+	if(!sourceFond){
+		console.log("source fond");
+		sourceFond = context.createBufferSource();
+		sourceFond.connect(panner);
+		//Chargement du son du fond
+		setAudioSource(sourceFond, 7, fileList2);
+		sourceFond.loop = true;
+		sourceFond.start();
+	}
+
 	panner = context.createPanner();
+	gain = context.createGain();
+	gain.gain.value = 10;
+
 	listener = context.listener;
 	//Position panner
-	panner.setPosition(50, 30, 0);
+	panner.setPosition(0, 10, 0);
 	//Position listener
-	listener.setPosition(50, 10, 0);
+	listener.setPosition(0, 0, 0);
+
 	//Routing
 	source.connect(panner);
-	panner.connect(context.destination);
-	//Chargement du son
-	setAudioSource(source, 0, fileList2);
+	panner.connect(gain);
+	gain.connect(context.destination);
+
+	
+	//Chargement du premier son du mur
+	setAudioSource2(source, rand, fileList2);
 	currentTime = context.currentTime;
 	//Lancement du son
-	source.start(currentTime + 1);
+	source.start(currentTime + 2);
 	//Lorsque le son est fini on joue le suivant
 	source.onended = function() {
 		//Joue le son suivant
@@ -88,7 +110,8 @@ Jeu2.prototype.init = function() {
 	//window.addEventListener("keydown", keyboardJeu2, false );
 
 	function relanceSon(){
-		if(nbSons == 5){
+		//CHANGER
+		if(nbSons == 4){
 			window.addEventListener("keydown", keyboardJeu2, false);
 		}else{
 			console.log("Nbsons "+nbSons);
@@ -109,7 +132,7 @@ Jeu2.prototype.init = function() {
 			source.connect(panner);
 
 			//Choisi le son à jouer
-			setAudioSource(source, 0, fileList2);
+			setAudioSource2(source, rand, fileList2);
 			//On recupere l'heure courante
 			var currentTime = context.currentTime;
 			//On laisse un délai d'0.2sec avant de jouer le son
@@ -139,10 +162,15 @@ Jeu2.prototype.init = function() {
 	 	console.log("Jeu Win");
 
 	 	victoire2 = 1;
+	 	// console.log(sourceFond);
+	 	sourceFond.loop = false;
+	 	sourceFond.stop();
+	 	sourceFond = null;
+	 	// console.log(sourceFond);
 	 	//On retire l'event listener pour arreter les déplacements du joueur
 	 	window.removeEventListener("keydown", keyboardJeu2);
 	 	//On réinitialise la position du lsitener et du panner
-	 	listener.setPosition(0,0,0);
+	 	listener.setPosition(0,2,0);
 	 	panner.setPosition(0,0,0);
 	 	//Lancement de la 2e partie de narration
 	 	var narration = new Narration();
@@ -158,6 +186,8 @@ Jeu2.prototype.init = function() {
 	 	ctx.fillText("Appuyez sur espace pour relancer le jeu!", canvas.width/2, canvas.height/3);
 	 	console.log("Jeu Lose");
 	 	lancementJeu2 = false;
+	 	// sourceFond.stop();
+	 	// sourceFond = null;
 
 	 	/*console.log("ordres touches length: " + ordreTouches.length);
 	 	//Vider le tableau ordresTouches, sinon les touches continuent à s'ajouter et le tableau est trop long
@@ -174,7 +204,7 @@ Jeu2.prototype.init = function() {
 	 	window.addEventListener("keydown", keyboardRelancerJeu, false);
 	 	//On arrete le son si il est en train de jouer
 	 	source.stop();
-	 	panner.setPosition(0,0,0);
+	 	panner.setPosition(0,10,0);
 	 	listener.setPosition(0,0,0);
 	 	//Création de la source
 		sonRecommencer = context.createBufferSource();
@@ -184,7 +214,7 @@ Jeu2.prototype.init = function() {
 		panner.connect(context.destination);
 
 		sonRecommencer.loop = true;
-		setAudioSource(sonRecommencer, 5, fileList2);
+		setAudioSource(sonRecommencer, 8, fileList2);
 		sonRecommencer.start();
 
 		victoire2 = 0;
@@ -210,7 +240,7 @@ Jeu2.prototype.init = function() {
 			console.log("Pas meme longeur");
 			return false;
 		}
-
+		//Verification de chaque son
 		for (var i = 0; i<ordreSons.length; i++){
 			//console.log(ordreSons[i]+" = "+ordreTouches[i]);
 			if(ordreSons[i] == ordreTouches[i]){
@@ -225,9 +255,16 @@ Jeu2.prototype.init = function() {
 				
 				//Si le nb d'erreurs < 3 on relance une sequence de son
 				if(nbErreurs < 3){
-					//On relance un séquence de sons
-					jeu = new Jeu2();
-					jeu.init();
+					source = context.createBufferSource();
+					source.connect(panner);
+					setAudioSource2(source, 6, fileList2);
+					gain.gain.value = 5;
+					source.start();
+					source.onended = function(){
+						//On relance un séquence de sons
+						jeu = new Jeu2();
+						jeu.init();
+					}
 				}
 				//Sinon le nombre d'erreur = 3 alors le joueur doit recommencer completement le jeu
 				else{
@@ -238,40 +275,49 @@ Jeu2.prototype.init = function() {
 		}
 		//Si la séquence est valide
 		if(verification == true){
-			//Si aucune séquence n'a été validée
-			if(sequence1 == false && sequence2 == false && sequence3 == false){
-				//Séquence 1 validée
-				console.log("Séquence 1 valide"); 
-				sequence1 = true;
-				console.log(sequence1);
-				console.log(sequence2);
-				console.log(sequence3);
-				//On relance un séquence de sons
-				var jeu = new Jeu2();
-				jeu.init();
-			}
-			//Si la séquence 1 a déjà été validé
-			else if (sequence1 == true && sequence2 == false && sequence3 == false){
-				//Séquence 1 validée
-				console.log("Séquence 2 valide"); 
-				sequence2 = true;
-				console.log(sequence1);
-				console.log(sequence2);
-				console.log(sequence3);
-				//On relance un séquence de sons
-				jeu = new Jeu2();
-				jeu.init();
-			}
-			//Si la séquence 2 a déjà été validée
-			else if (sequence1 == true && sequence2 == true && sequence3 == false){
-				//Séquence 1 validée
-				console.log("Séquence 3 valide"); 
-				sequence3 = true;
-				console.log(sequence1);
-				console.log(sequence2);
-				console.log(sequence3);
-				//Les 3 séquences sont validées le jeu est terminé
-				finJeuWin();
+			
+			//Si la séquence est reussie on joue le son de succes
+			source = context.createBufferSource();
+			source.connect(panner);
+			gain.gain.value = 20;
+			setAudioSource2(source, 5, fileList2);
+			source.start();
+			source.onended = function(){
+				//Si aucune séquence n'a été validée
+				if(sequence1 == false && sequence2 == false && sequence3 == false){
+					//Séquence 1 validée
+					console.log("Séquence 1 valide"); 
+					sequence1 = true;
+					console.log(sequence1);
+					console.log(sequence2);
+					console.log(sequence3);
+					//On relance un séquence de sons
+					var jeu = new Jeu2();
+					jeu.init();
+				}
+				//Si la séquence 1 a déjà été validé
+				else if (sequence1 == true && sequence2 == false && sequence3 == false){
+					//Séquence 1 validée
+					console.log("Séquence 2 valide"); 
+					sequence2 = true;
+					console.log(sequence1);
+					console.log(sequence2);
+					console.log(sequence3);
+					//On relance un séquence de sons
+					jeu = new Jeu2();
+					jeu.init();
+				}
+				//Si la séquence 2 a déjà été validée
+				else if (sequence1 == true && sequence2 == true && sequence3 == false){
+					//Séquence 1 validée
+					console.log("Séquence 3 valide"); 
+					sequence3 = true;
+					console.log(sequence1);
+					console.log(sequence2);
+					console.log(sequence3);
+					//Les 3 séquences sont validées le jeu est terminé
+					finJeuWin();
+				}
 			}
 		}
 	}
@@ -284,7 +330,6 @@ Jeu2.prototype.init = function() {
 		touche = String.fromCharCode(event.keyCode);
 		console.log(touche);
 		// nbTouches++;
-
 			switch(touche){
 				case "S":
 					//On retire le listener evt clavier pour que le joueur n'appuie pas sur une autre touche pendant que le son est en train d'etre jouer
@@ -295,7 +340,7 @@ Jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0, fileList2);
+					setAudioSource2(source, 0, fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt
@@ -314,7 +359,7 @@ Jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0, fileList2);
+					setAudioSource2(source, 1, fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt
@@ -333,7 +378,7 @@ Jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0, fileList2);
+					setAudioSource2(source, 2, fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt
@@ -352,7 +397,7 @@ Jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0, fileList2);
+					setAudioSource2(source, 3, fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt
@@ -371,7 +416,7 @@ Jeu2.prototype.init = function() {
 					//Connect la source au panner
 					source.connect(panner);
 					//On choisit le son à jouer
-					setAudioSource(source, 0,fileList2);
+					setAudioSource2(source, 4,fileList2);
 					//On lance le son
 					source.start();
 					//lorsque le son est fini on remet le listener d'evt
@@ -389,7 +434,8 @@ Jeu2.prototype.init = function() {
 			console.log(ordreTouches);
 
 		//Si l'utilisateur a dejà appuyé sur 5 touches on verifie la séquence
-		if(nbTouches >= 5){
+		//CHANGER
+		if(nbTouches >= 4){
 			source.onended = function() {
 				verifSequence();
 				window.removeEventListener("keydown", keyboardJeu2);
@@ -405,6 +451,8 @@ Jeu2.prototype.init = function() {
 			//relancer le jeu ou passer à la suite
 			case " ":
 				if(victoire2 == 0){
+					//On arrete le fond sonore
+					// sourceFond.stop();
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
 					//Arrete le son "recommencer le jeu"
 					sonRecommencer.loop = false;
@@ -428,7 +476,7 @@ Jeu2.prototype.instructions = function() {
 	console.log("instructions jeu 2");
 	sonsJeu2Instructions = [
 	"sons/instructions/jeu2.mp3",
-	"sons/instructions/jeu3.mp3",
+	"sons/instructions/jeu22j.mp3",
 	"sons/instructions/fin_instructions.mp3"
 	];
 
@@ -440,30 +488,60 @@ Jeu2.prototype.instructions = function() {
 	panner.connect(context.destination);
 
 	source.loop = false;
+	setAudioSource(source, 0, sonsJeu2Instructions);
 	//On donne les instructions selon le mode de jeu
 	if(mode == 0 ){
-		setAudioSource(source, 0, sonsJeu2Instructions);
-	}else{
-		setAudioSource(source, 1, sonsJeu2Instructions);
-	}
-	
-	source.start();
-	source.onended = function(){
-		//On lance la phrase de fin d'instruction en boucle
-		//Création de la source
-		if(!lancementJeu2){
-			source = context.createBufferSource();
-			panner = context.createPanner();
-			//Routing
-			source.connect(panner);
-			panner.connect(context.destination);
-			source.loop = true;
-			setAudioSource(source, 2, sonsJeu2Instructions);
-			source.start();
+		source.start();
+		source.onended = function(){
+			//On lance la phrase de fin d'instruction en boucle
+			//Création de la source
+			if(!lancementJeu2){
+				source = context.createBufferSource();
+				panner = context.createPanner();
+				//Routing
+				source.connect(panner);
+				panner.connect(context.destination);
+				source.loop = true;
+				setAudioSource(source, 2, sonsJeu2Instructions);
+				source.start();
 
-			console.log("FIN JEU INSTRUCTIONS 2");
+				console.log("FIN JEU INSTRUCTIONS 2");
+			}
+		}
+	}else{
+		source.start();
+		source.onended = function(){
+			if(!lancementJeu2){
+				//Création de la source
+				source = context.createBufferSource();
+				panner = context.createPanner();
+				panner.setPosition(0, 2, 0);
+				//Routing
+				source.connect(panner);
+				panner.connect(context.destination);
+				source.loop = false;
+				setAudioSource(source, 1, sonsJeu2Instructions);
+				source.start();
+				console.log("INSTRUCTIONS 2J");
+				source.onended = function(){
+					if(!lancementJeu2){
+					//On lance la phrase de fin d'instruction en boucle
+					//Création de la source
+						source = context.createBufferSource();
+						panner = context.createPanner();
+						//Routing
+						source.connect(panner);
+						panner.connect(context.destination);
+						source.loop = true;
+						setAudioSource(source, 2, sonsJeu2Instructions);
+						source.start();
+						console.log("FIN JEU 2 INSTRUCTIONS");
+					}
+				}
+			}
 		}
 	}
+	
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillText("Instructions jeu 2", canvas.width/2, canvas.height/2);
