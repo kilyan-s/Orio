@@ -1,5 +1,7 @@
 var victoire2 = 0;
 var lancementJeu2 = false;
+//Lorsqu'on appuie sur F pour relire les instructions avant la fin de celles-ci il y a deux son qui se jouent en meme temps. Cette variable permet de bloquer la lecture du 2e son
+var relireInstruction2 = false;
 var nbSons;
 var ordreSons;
 //TOUCHES
@@ -22,6 +24,26 @@ var Jeu2 = function(){};
 
 Jeu2.prototype.init = function() {
 	//ctx.clearRect(0, 0, canvas.width, canvas.height);
+	/***
+	*
+	*	AFFICHAGE  JEU 2
+	*
+	***/
+	var backgroundJ2 = new Image();
+	backgroundJ2.src = "img/jeu2/jeu2.svg";
+
+	var mur = new Image();
+	mur.src = "img/jeu2/jeu2_mur.svg";
+
+	var imgPerso = new Image();
+	imgPerso.src = "img/jeu1/perso.svg";
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.drawImage(backgroundJ2, 0, 0);
+	ctx.drawImage(mur, 0, 0);
+	ctx.drawImage(imgPerso, 333, 364);
+
+
 
 	//SONS
 	nbSons = 0;
@@ -66,7 +88,7 @@ Jeu2.prototype.init = function() {
 	//Création source & panner & listener
 	source = context.createBufferSource();
 	//On ne lance le son de fond qu'une fois sinon il ne s'arrete pas
-	if(!sourceFond){
+	/*if(!sourceFond){
 		console.log("source fond");
 		sourceFond = context.createBufferSource();
 		sourceFond.connect(panner);
@@ -74,7 +96,7 @@ Jeu2.prototype.init = function() {
 		setAudioSource(sourceFond, 7, fileList2);
 		sourceFond.loop = true;
 		sourceFond.start();
-	}
+	}*/
 
 	panner = context.createPanner();
 	gain = context.createGain();
@@ -103,8 +125,7 @@ Jeu2.prototype.init = function() {
 		relanceSon();
 	}
 	
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillText("2e jeu", canvas.width/2, canvas.height/2);
+
 
 	//Evt clavier
 	//window.addEventListener("keydown", keyboardJeu2, false );
@@ -148,11 +169,11 @@ Jeu2.prototype.init = function() {
 		
 	}
 
-/*******
-
-	FIN JEU
-
-*******/
+/***
+*
+*	FIN JEU
+*
+***/
 
 	function finJeuWin() {
 		//On vide le canvas
@@ -277,9 +298,11 @@ Jeu2.prototype.init = function() {
 		if(verification == true){
 			
 			//Si la séquence est reussie on joue le son de succes
+			gain.gain.value = 20;
 			source = context.createBufferSource();
 			source.connect(panner);
-			gain.gain.value = 20;
+			panner.connect(gain);
+			gain.connect(context.destination)
 			setAudioSource2(source, 5, fileList2);
 			source.start();
 			source.onended = function(){
@@ -473,78 +496,124 @@ Jeu2.prototype.init = function() {
 
 
 Jeu2.prototype.instructions = function() {
-	console.log("instructions jeu 2");
+	/***
+	*
+	*	AFFICHAGE INSTRUCTIONS JEU 2
+	*
+	***/
+	var bgInstruction = new Image();
+	bgInstruction.src = "img/jeu2/jeu2_instructions.svg"
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.drawImage(bgInstruction, 0, 0);
+
+	/***
+	*
+	*	SONS INSTRUCTIONS JEU 1
+	*
+	***/
 	sonsJeu2Instructions = [
 	"sons/instructions/jeu2.mp3",
 	"sons/instructions/jeu22j.mp3",
-	"sons/instructions/fin_instructions.mp3"
+	"sons/instructions/fin_instructions.mp3",
+	"sons/jeu2/ambiance.wav"
 	];
+	//Source Fond
+	sourceFond = context.createBufferSource();
+	pannerFond = context.createPanner();
 
-	//Création de la source
-	source = context.createBufferSource();
+	var gainFond = context.createGain();
+	gainFond.gain.value = 10;
 
-	//Routing
-	source.connect(panner);
-	panner.connect(context.destination);
+	pannerFond.setPosition(0, 10, 0);
 
-	source.loop = false;
-	setAudioSource(source, 0, sonsJeu2Instructions);
-	//On donne les instructions selon le mode de jeu
-	if(mode == 0 ){
-		source.start();
-		source.onended = function(){
-			//On lance la phrase de fin d'instruction en boucle
-			//Création de la source
-			if(!lancementJeu2){
-				source = context.createBufferSource();
-				panner = context.createPanner();
-				//Routing
-				source.connect(panner);
-				panner.connect(context.destination);
-				source.loop = true;
-				setAudioSource(source, 2, sonsJeu2Instructions);
-				source.start();
-
-				console.log("FIN JEU INSTRUCTIONS 2");
-			}
-		}
-	}else{
-		source.start();
-		source.onended = function(){
-			if(!lancementJeu2){
-				//Création de la source
-				source = context.createBufferSource();
-				panner = context.createPanner();
-				panner.setPosition(0, 2, 0);
-				//Routing
-				source.connect(panner);
-				panner.connect(context.destination);
-				source.loop = false;
-				setAudioSource(source, 1, sonsJeu2Instructions);
-				source.start();
-				console.log("INSTRUCTIONS 2J");
-				source.onended = function(){
-					if(!lancementJeu2){
-					//On lance la phrase de fin d'instruction en boucle
-					//Création de la source
-						source = context.createBufferSource();
-						panner = context.createPanner();
-						//Routing
-						source.connect(panner);
-						panner.connect(context.destination);
-						source.loop = true;
-						setAudioSource(source, 2, sonsJeu2Instructions);
-						source.start();
-						console.log("FIN JEU 2 INSTRUCTIONS");
-					}
-				}
-			}
-		}
-	}
+	sourceFond.connect(pannerFond);
+	pannerFond.connect(gainFond);
+	gainFond.connect(context.destination);
+	//Musique de fond
+	setAudioSource(sourceFond, 3, sonsJeu2Instructions);
+	sourceFond.loop = true;
+	sourceFond.start();
 	
 
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillText("Instructions jeu 2", canvas.width/2, canvas.height/2);
+	lireInstructions();
+	function lireInstructions(){
+		//Création de la source
+		sourceInstructions = context.createBufferSource();
+		
+		//Routing
+		sourceInstructions.connect(pannerInstructions);
+		pannerInstructions.setPosition(0, 15, 0);
+
+		sourceInstructions.loop = false;
+		setAudioSource(sourceInstructions, 0, sonsJeu2Instructions);
+		//On donne les instructions selon le mode de jeu
+		if(mode == 0){
+			sourceInstructions.start();
+			// console.log("relire instruction " + relireInstruction1);
+			sourceInstructions.onended = function(){
+				if(!lancementJeu2){
+					sourceInstructions = null;
+					// console.log("!relireInstruction1");
+					//On lance la phrase de fin d'instruction en boucle
+					//Création de la sourceInstructions
+					sourceInstructions = context.createBufferSource();
+					pannerInstructions = context.createPanner();
+					pannerInstructions.setPosition(0, 10, 0);
+					//Routing
+					sourceInstructions.connect(pannerInstructions);
+					pannerInstructions.connect(gainInstructions);
+					gainInstructions.connect(context.destination);
+					sourceInstructions.loop = true;
+					setAudioSource(sourceInstructions, 2, sonsJeu2Instructions);
+					sourceInstructions.start();
+					// console.log("FIN JEU INSTRUCTIONS");
+				}
+			}
+		}else{
+			sourceInstructions.start();
+			sourceInstructions.onended = function(){
+				if(!lancementJeu2){
+					//Création de la sourceInstructions
+					sourceInstructions = context.createBufferSource();
+					pannerInstructions = context.createPanner();
+					pannerInstructions.setPosition(0, 15, 0);
+					//Routing
+					sourceInstructions.connect(pannerInstructions);
+					pannerInstructions.connect(gainInstructions);
+					gainInstructions.connect(context.destination);
+					sourceInstructions.loop = false;
+					setAudioSource(sourceInstructions, 1, sonsJeu2Instructions);
+					sourceInstructions.start();
+					// console.log("INSTRUCTIONS 2J");
+					sourceInstructions.onended = function(){
+						if(!lancementJeu2){
+							//On lance la phrase de fin d'instruction en boucle
+							//Création de la source
+							sourceInstructions = context.createBufferSource();
+							/*changer*/
+							// pannerInstructions = context.createPanner();
+							pannerInstructions.setPosition(0, 10, 0);
+							//Routing
+							sourceInstructions.connect(pannerInstructions);
+							pannerInstructions.connect(gainInstructions);
+							gainInstructions.connect(context.destination);
+							sourceInstructions.loop = true;
+							setAudioSource(sourceInstructions, 2, sonsJeu2Instructions);
+							sourceInstructions.start();
+							// console.log("FIN JEU INSTRUCTIONS");
+						}//Fin if lancement jeu
+					}
+				}//Fin if lancement jeu
+			}//Fin source onended
+		}
+	}
+	//Fin func lireInstructions
+	
+	/***
+	*
+	*	KEYBOARD INSTRUCTIONS JEU 2
+	*
+	***/
 
 	//Evenement clavier
 	window.addEventListener("keydown", keyboardInstruction2, false);
@@ -562,9 +631,9 @@ Jeu2.prototype.instructions = function() {
 				//On retire l'event listener
 				window.removeEventListener("keydown", keyboardInstruction2);
 				//On arrete de looper le son
-				source.loop = false;
+				sourceInstructions.loop = false;
 				//On coupe le son
-				source.stop();
+				sourceInstructions.stop();
 				//Pour que la fin des instructions ne se lance pas si le jeu est déjà lancé
 				lancementJeu2 = true;
 				//On affiche lance le jeu
@@ -573,24 +642,14 @@ Jeu2.prototype.instructions = function() {
 				break;
 			case "F":
 				console.log("Relire instructions");
-				source.stop();
-				/*//Création de la source
-				source = context.createBufferSource();
-
-				//Routing
-				source.connect(panner);
-				panner.connect(context.destination);
-
-				source.loop = true;
-				//On donne les instructions selon le mode de jeu
-				if(mode == 0 ){
-					setAudioSource(source, 0, sonsJeu2Instructions);
-				}else{
-					setAudioSource(source, 1, sonsJeu2Instructions);
-				}
-				source.start();*/
-				var jeu2 = new Jeu2();
-				jeu2.instructions();
+				// relireInstruction1 = true;
+				sourceInstructions.loop = false;
+				//On met une fonction vide au onended pour que les sons suivants d'instructions ne se lisent pas 
+				sourceInstructions.onended = function(){};
+				sourceInstructions.stop();
+				sourceInstructions = null;	
+				//Relance les instructions
+				lireInstructions();
 				break;
 			default:
 				return;

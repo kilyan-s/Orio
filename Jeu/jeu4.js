@@ -75,6 +75,8 @@ var fileList4 = [
     "sons/jeu4/ambiance/neon.wav",
     "sons/jeu4/ambiance/telephone.wav",
     "sons/jeu4/ambiance/chat.wav",
+    "sons/narration/part5.mp3",
+    "sons/narration/part5.mp3"
 ];
 
 
@@ -104,6 +106,26 @@ Jeu4.prototype.init = function() {
 		listenery += 1;
 		listener.setPosition(listenerx, listenery, listenerz);
 	}
+	/**
+	*
+		SONS FOND
+	*
+	**/
+	sourceFond = context.createBufferSource();
+	pannerFond = context.createPanner();
+
+	var gainFond = context.createGain();
+	gainFond.gain.value = 1;
+
+	pannerFond.setPosition(0, 10, 0);
+
+	sourceFond.connect(pannerFond);
+	pannerFond.connect(gainFond);
+	gainFond.connect(context.destination);
+	//Musique de fond
+	setAudioSource(sourceFond, 16, fileList4);
+	sourceFond.loop = true;
+	sourceFond.start();
 
 	// Initialize audio
 	// context = new webkitAudioContext();
@@ -270,7 +292,8 @@ Jeu4.prototype.init = function() {
 		
 		// Si le listener est sur la source 
 			if (trouve==true){
-			setAudioSource(source4,9, fileList4);
+				//Changer: son final 15
+			setAudioSource(source4, 15, fileList4);
 		}
 		
 		else{
@@ -377,6 +400,7 @@ Jeu4.prototype.init = function() {
 		sourcetelephone.stop();
 		sourceneon.stop();
 		sourcechat.stop();
+		sourceFond.stop();
 
 		var narration = new Narration();
 		narration.part5();
@@ -385,77 +409,111 @@ Jeu4.prototype.init = function() {
 };
 
 Jeu4.prototype.instructions = function() {
-	console.log("instructions jeu 4");
+	/***
+	*
+	*	AFFICHAGE INSTRUCTIONS JEU 4
+	*
+	***/
+	var bgInstruction = new Image();
+	// bgInstruction.src = "img/jeu4/jeu4_instructions.svg"
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	//ctx.drawImage(bgInstruction, 0, 0);
+	ctx.fillText("Instructions jeu 4", canvas.width/2, canvas.height/2);
+
+	/***
+	*
+	*	SONS INSTRUCTIONS JEU 4
+	*
+	***/
 	sonsJeu4Instructions = [
 	"sons/instructions/jeu4.mp3",
 	"sons/instructions/jeu42j.mp3",
 	"sons/instructions/fin_instructions.mp3"
 	];
 
-	//Création de la source
-	source = context.createBufferSource();
+	lireInstructions();
+	function lireInstructions(){
+		//Création de la source
+		sourceInstructions = context.createBufferSource();
+		pannerInstructions = context.createPanner();
+		gainInstructions = context.createGain();
+		gainInstructions.gain.value = 9;
+		
+		//Routing
+		sourceInstructions.connect(pannerInstructions);
+		pannerInstructions.connect(gainInstructions);
+		gainInstructions.connect(context.destination);
+		pannerInstructions.setPosition(0, 15, 0);
 
-	//Routing
-	source.connect(panner);
-	panner.connect(context.destination);
-	panner.setPosition(0, 2, 0);
-	source.loop = false;
-	setAudioSource(source, 0, sonsJeu4Instructions);
-	//On donne les instructions selon le mode de jeu
-	if(mode == 0 ){
-		source.start();
-		source.onended = function(){
-			//On lance la phrase de fin d'instruction en boucle
-			//Création de la source
-			if(!lancementJeu4){
-				source = context.createBufferSource();
-				panner = context.createPanner();
-				//Routing
-				source.connect(panner);
-				panner.connect(context.destination);
-				source.loop = true;
-				setAudioSource(source, 2, sonsJeu4Instructions);
-				source.start();
-
-				console.log("FIN JEU 4 INSTRUCTIONS");
-			}
-		}
-	}else{
-		source.start();
-		source.onended = function(){
-			if(!lancementJeu4){
-				//Création de la source
-				source = context.createBufferSource();
-				panner = context.createPanner();
-				panner.setPosition(0, 2, 0);
-				//Routing
-				source.connect(panner);
-				panner.connect(context.destination);
-				source.loop = false;
-				setAudioSource(source, 1, sonsJeu4Instructions);
-				source.start();
-				console.log("INSTRUCTIONS 2J");
-				source.onended = function(){
-					if(!lancementJeu4){
+		sourceInstructions.loop = false;
+		setAudioSource(sourceInstructions, 0, sonsJeu4Instructions);
+		//On donne les instructions selon le mode de jeu
+		if(mode == 0){
+			sourceInstructions.start();
+			// console.log("relire instruction " + relireInstruction1);
+			sourceInstructions.onended = function(){
+				if(!lancementJeu4){
+					sourceInstructions = null;
+					// console.log("!relireInstruction1");
 					//On lance la phrase de fin d'instruction en boucle
-					//Création de la source
-						source = context.createBufferSource();
-						panner = context.createPanner();
-						//Routing
-						source.connect(panner);
-						panner.connect(context.destination);
-						source.loop = true;
-						setAudioSource(source, 2, sonsJeu4Instructions);
-						source.start();
-						console.log("FIN JEU 4 INSTRUCTIONS");
-					}
+					//Création de la sourceInstructions
+					sourceInstructions = context.createBufferSource();
+					pannerInstructions = context.createPanner();
+					pannerInstructions.setPosition(0, 10, 0);
+					//Routing
+					sourceInstructions.connect(pannerInstructions);
+					pannerInstructions.connect(gainInstructions);
+					gainInstructions.connect(context.destination);
+					sourceInstructions.loop = true;
+					setAudioSource(sourceInstructions, 2, sonsJeu4Instructions);
+					sourceInstructions.start();
+					// console.log("FIN JEU INSTRUCTIONS");
 				}
 			}
+		}else{
+			sourceInstructions.start();
+			sourceInstructions.onended = function(){
+				if(!lancementJeu4){
+					//Création de la sourceInstructions
+					sourceInstructions = context.createBufferSource();
+					pannerInstructions = context.createPanner();
+					pannerInstructions.setPosition(0, 15, 0);
+					//Routing
+					sourceInstructions.connect(pannerInstructions);
+					pannerInstructions.connect(gainInstructions);
+					gainInstructions.connect(context.destination);
+					sourceInstructions.loop = false;
+					setAudioSource(sourceInstructions, 1, sonsJeu4Instructions);
+					sourceInstructions.start();
+					// console.log("INSTRUCTIONS 2J");
+					sourceInstructions.onended = function(){
+						if(!lancementJeu4){
+							//On lance la phrase de fin d'instruction en boucle
+							//Création de la source
+							sourceInstructions = context.createBufferSource();
+							/*changer*/
+							// pannerInstructions = context.createPanner();
+							pannerInstructions.setPosition(0, 10, 0);
+							//Routing
+							sourceInstructions.connect(pannerInstructions);
+							pannerInstructions.connect(context.destination);
+							sourceInstructions.loop = true;
+							setAudioSource(sourceInstructions, 2, sonsJeu4Instructions);
+							sourceInstructions.start();
+							// console.log("FIN JEU INSTRUCTIONS");
+						}//Fin if lancement jeu
+					}
+				}//Fin if lancement jeu
+			}//Fin source onended
 		}
-	}	
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillText("Instructions jeu 4", canvas.width/2, canvas.height/2);
-
+	}
+	//Fin func lireInstructions
+	
+	/***
+	*
+	*	KEYBOARD INSTRUCTIONS JEU 4
+	*
+	***/
 	//Evenement clavier
 	window.addEventListener("keydown", keyboardInstruction4, false);
 
@@ -471,9 +529,9 @@ Jeu4.prototype.instructions = function() {
 				//On retire l'event listener
 				window.removeEventListener("keydown", keyboardInstruction4);
 				//On arrete de looper le son
-				source.loop = false;
+				sourceInstructions.loop = false;
 				//On coupe le son
-				source.stop();
+				sourceInstructions.stop();
 				lancementJeu4 = true;
 				//On affiche lance le jeu
 				var jeu4 = new Jeu4();
@@ -481,22 +539,14 @@ Jeu4.prototype.instructions = function() {
 				break;
 			case "F":
 				console.log("Relire instructions");
-				source.stop();
-				//Création de la source
-				source = context.createBufferSource();
-
-				//Routing
-				source.connect(panner);
-				panner.connect(context.destination);
-
-				source.loop = true;
-				//On donne les instructions selon le mode de jeu
-				if(mode == 0 ){
-					setAudioSource(source, 0, sonsJeu4Instructions);
-				}else{
-					setAudioSource(source, 1, sonsJeu4Instructions);
-				}
-				source.start();
+				// relireInstruction1 = true;
+				sourceInstructions.loop = false;
+				//On met une fonction vide au onended pour que les sons suivants d'instructions ne se lisent pas 
+				sourceInstructions.onended = function(){};
+				sourceInstructions.stop();
+				sourceInstructions = null;	
+				//Relance les instructions
+				lireInstructions();
 				break;
 			default:
 				return;

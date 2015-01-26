@@ -65,7 +65,10 @@ function keyboardCasque(event){
 			//On coupe le son
 			source.stop();
 			//On affiche les modes de jeu
-			afficherMode();
+			//Fichier modejeu.js
+			mode = new ModeJeu();
+			mode.init();
+			// afficherMode();
 			/*//Lorsque l'instruction a fini de se jouer on passe aux modes
 			source.onended = function(){
 				afficherMode();
