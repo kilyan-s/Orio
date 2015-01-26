@@ -392,6 +392,14 @@ Jeu4.prototype.init = function() {
 	*
 	*/
 	function finJeuWin(){
+		//Message visuel Victoire
+		ctx.font = "bold 15px Arial";
+		ctx.textAlign = 'center';
+		ctx.fillStyle = "rgba(255,255,255,0.65)";
+ 		ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
+ 		ctx.fillStyle = "rgba(24,109,148,1)";
+	 	ctx.fillText("Félicitation vous avez trouvé Hugo !", canvas.width/2, (canvas.height/2 - 25));
+	 	
 		window.removeEventListener("keydown", keyboardJeu4);
 
 		source.stop();
@@ -415,10 +423,9 @@ Jeu4.prototype.instructions = function() {
 	*
 	***/
 	var bgInstruction = new Image();
-	// bgInstruction.src = "img/jeu4/jeu4_instructions.svg"
+	bgInstruction.src = "img/jeu4/jeu4_instructions.svg"
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	//ctx.drawImage(bgInstruction, 0, 0);
-	ctx.fillText("Instructions jeu 4", canvas.width/2, canvas.height/2);
+	ctx.drawImage(bgInstruction, 0, 0);
 
 	/***
 	*

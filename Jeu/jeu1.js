@@ -6,7 +6,7 @@ var relireInstruction1 = false;
 
 var sourceVie, sourceFond, sourceTouche;
 var pannerVie, pannerFond, pannerTouche;
-var sourceInstructions, pannerInstructions, gainInstructions;
+var sourceInstructions, pannerInstructions, gainInstructions, gainAutre;
 
 var Jeu1 = function(){};
 
@@ -78,8 +78,7 @@ Jeu1.prototype.init = function() {
 	var depX = 0;
 	var depY = 5;
 	var depZ = 0;
-
-	var tabDeplacement = [[-1,5],[0,5],[1.2,5]];
+	var tabDeplacement = [[-1, 5],[0, 5],[1.2, 5]];
 
 	//Si collision
 	var collision = false;
@@ -234,16 +233,18 @@ Jeu1.prototype.init = function() {
 	pannerVie = context.createPanner();
 	// pannerFond = context.createPanner();
 	pannerTouche = context.createPanner();
+	gainAutre = context.createGain();
+	gainAutre.gain.value = 4
 	
 
 	pannerVie.setPosition(listenerx, listenery, 0);
 	pannerFond.setPosition(listenerx, listenery + 10, 0);
 	pannerTouche.setPosition(listenerx, listenery, 0);
 
-	pannerVie.connect(gain);
-	// pannerFond.connect(gain);
-	pannerTouche.connect(gain);
-	gain.connect(context.destination);
+	pannerVie.connect(gainAutre);
+	// pannerFond.connect(gainAutre);
+	pannerTouche.connect(gainAutre);
+	gainAutre.connect(context.destination);
 
 	
 
@@ -336,6 +337,8 @@ Jeu1.prototype.init = function() {
 		 	//initailisation du compteur pour les vies
 		 	i = 0;
 		 	nbObstacles ++;
+		 	// vitesseDep ++;
+		 	// tabDeplacement = [[-1,vitesseDep],[0,vitesseDep],[1.2,vitesseDep]];
 		}
 
 	 	// console.log(nbObstacles);
@@ -350,7 +353,8 @@ Jeu1.prototype.init = function() {
 		obstaclex += depX;
 		obstacley -= depY;
 		obstaclez += depZ;
-
+		// console.log(vitesseDep);
+		// console.log(obstacley);
 		testCollision();
 		// console.log(obstaclex);
 		//Si l'obastacle est à 15 devant ou derniere le listener on le fait se deplacer plus vite pour eviter d'avoir un son trop fort au moment ou il est pile sur le listener
@@ -381,7 +385,6 @@ Jeu1.prototype.init = function() {
 		// console.log("dry gain early: " + dryGainNodeEarly.gain.value);
 		// console.log("dry gain global: " + dryGainNodeGlobal.gain.value);
 		ctx.clearRect(0,0, canvas.width, canvas.height);
-
 		ctx.drawImage(imgperso, perso.x, perso.y);
 
 		// vies
@@ -472,14 +475,18 @@ Jeu1.prototype.init = function() {
 	function finJeuLose(){
 		//Si le joueur touche un obstacle on décrémente le score car l'obastacle touché ne doit pas être compatabilisé
 		// nbObstacles--;
-		/*ctx.clearRect(0, 0, canvas.width, canvas.height);
-		ctx.font = "bold 16px Arial";*/
+		/*ctx.clearRect(0, 0, canvas.width, canvas.height);*/
+		//Message visuel perdu
+		ctx.font = "bold 15px Arial";
 		ctx.textAlign = 'center';
-	 	ctx.fillText("Vous avez perdu !", canvas.width/2, canvas.height/2);
-	 	ctx.fillText("Appuyez sur espace pour relancer le jeu!", canvas.width/2, canvas.height/3);
-	 	console.log("Jeu Lose");
+		ctx.fillStyle = "rgba(255,255,255,0.65)";
+ 		ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
+	 	ctx.fillStyle = "rgba(24,109,148,1)";
+	 	ctx.fillText("Vous avez perdu !", canvas.width/2, (canvas.height/2 - 40));
+	 	ctx.fillText("Appuyez sur espace pour relancer le jeu!", canvas.width/2, (canvas.height/2 ));
+	 	// console.log("Jeu Lose");
 
-	 	console.log(nbObstacles);
+	 	// console.log(nbObstacles);
 	 	//Repositionne le listener et le panner
 	 	listenerx = 50;
 	 	listenery = 20;
@@ -512,10 +519,15 @@ Jeu1.prototype.init = function() {
 	}
 
 	function finJeuWin(){
-		/*ctx.clearRect(0, 0, canvas.width, canvas.height);
-		ctx.font = "bold 16px Arial";*/
+		/*ctx.clearRect(0, 0, canvas.width, canvas.height);*/
+		//Message visuel Victoire
+		ctx.font = "bold 15px Arial";
 		ctx.textAlign = 'center';
-	 	ctx.fillText("Félicitiation vous avez évité tous les obstacles !", canvas.width/2, canvas.height/2);
+		ctx.fillStyle = "rgba(255,255,255,0.65)";
+ 		ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
+ 		ctx.fillStyle = "rgba(24,109,148,1)";
+	 	ctx.fillText("Félicitation vous avez évité tous les obstacles !", canvas.width/2, (canvas.height/2 - 25));
+	 	
 	 	// console.log("Jeu Win");
 	 	// console.log(sourceFond);
 	 	sourceFond.loop = false;
@@ -561,7 +573,7 @@ Jeu1.prototype.init = function() {
 					listener.setPosition(listenerx, listenery, listenerz);
 					pannerFond.setPosition(listenerx, listenery + 10, listenerz);
 					perso.x -= perso.dep;
-					console.log(perso.x);
+					// console.log(perso.x);
 				}else{
 					//Déplacement interdit
 					// sourceTouche.stop();
@@ -582,7 +594,7 @@ Jeu1.prototype.init = function() {
 					listener.setPosition(listenerx, listenery, listenerz);
 					pannerFond.setPosition(listenerx, listenery + 10, listenerz);
 					perso.x += perso.dep;
-					console.log(perso.x);
+					// console.log(perso.x);
 				}else{
 					//Déplacement interdit
 					// sourceTouche.stop();
@@ -602,8 +614,8 @@ Jeu1.prototype.init = function() {
 					//Arrete le son "recommencer le jeu"
 					sonRecommencer.loop = false;
 					sonRecommencer.stop();
-					sourceFond.loop = false;
-					sourceFond.stop();
+					// sourceFond.loop = false;
+					// sourceFond.stop();
 
 					window.removeEventListener("keydown", verifKey1);
 					//console.log(jeu);

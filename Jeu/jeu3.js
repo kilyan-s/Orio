@@ -206,7 +206,14 @@ Jeu3.prototype.init = function() {
 
 *******/
 function finJeuWin(){
-	console.log("Gagné");
+	//Message visuel Victoire
+	ctx.font = "bold 15px Arial";
+	ctx.textAlign = 'center';
+	ctx.fillStyle = "rgba(255,255,255,0.65)";
+	ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
+	ctx.fillStyle = "rgba(24,109,148,1)";
+ 	ctx.fillText("Félicitation vous avez ouvert la porte !", canvas.width/2, (canvas.height/2 - 25));
+	 	
 	source.stop();
 	window.removeEventListener("keydown", keyboardJeu3);
 	//Lancement de la suite de la narration
@@ -215,6 +222,15 @@ function finJeuWin(){
 }
 
 function finJeuLose(){
+	//Message visuel perdu
+	ctx.font = "bold 15px Arial";
+	ctx.textAlign = 'center';
+	ctx.fillStyle = "rgba(255,255,255,0.65)";
+		ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
+ 	ctx.fillStyle = "rgba(24,109,148,1)";
+ 	ctx.fillText("Vous avez perdu !", canvas.width/2, (canvas.height/2 - 40));
+ 	ctx.fillText("Appuyez sur espace pour relancer le jeu!", canvas.width/2, (canvas.height/2 ));			
+
 	window.addEventListener("keydown", keyboardJeu3Relancer, false);
 	lancementJeu3 = false;
 	//On arrete le son si il est en train de jouer
@@ -370,16 +386,15 @@ function finJeuLose(){
 };
 
 Jeu3.prototype.instructions = function(){
-/***
+	/***
 	*
 	*	AFFICHAGE INSTRUCTIONS JEU 3
 	*
 	***/
 	var bgInstruction = new Image();
-	// bgInstruction.src = "img/jeu3/jeu3_instructions.svg"
+	bgInstruction.src = "img/jeu3/jeu3_instructions.svg"
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	// ctx.drawImage(bgInstruction, 0, 0);
-	ctx.fillText("Instructions jeu 3", canvas.width/2, canvas.height/2);
+	ctx.drawImage(bgInstruction, 0, 0);
 
 	/***
 	*

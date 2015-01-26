@@ -2,6 +2,7 @@ var urlListeIntro;
 //Choix pierre: 0 = garder; 1 = jeter
 var choixpierre; 
 var sonFondNarration, pannerFondNarrationn, gainFondNarration;
+var source1;
 var Narration = function(){
 
 };
@@ -42,12 +43,21 @@ Narration.prototype.init = function(){
 	for (var i = 0; i< urlListeIntro.length; i++){
 		bufferList = 0;
 	}	
+	// setAudioSource2(source1, 0, urlListeIntro);
 };
 
 Narration.prototype.part1 = function(){
+	var chrono1 = new Chrono();
+	chrono1.init(0);
+	chrono1.start();
+	var tempChargement2 = 7;
+	context = null;
+	//Initialize audio context
+	context = new webkitAudioContext();
 	//Création de la source
 	source = context.createBufferSource();
-
+	panner = context.createPanner();
+	listener = context.listener
 
 	//Routing
 	source.connect(panner);
@@ -61,6 +71,108 @@ Narration.prototype.part1 = function(){
 	setAudioSource2(source, 0, urlListeIntro);
 	source.start();
 
+	/*
+	*
+	* Animation premiere partie narration
+	*	On lance chaque animation en fonction du temps (en secondes) écoulé
+	*
+	*/
+	var time = window.setInterval(anim, 1000);
+
+	var animation = new Animation1();
+
+	function anim(){
+		console.log(chrono1.getTimeStamp());
+		//1ere animation
+		if(chrono1.getTimeStamp() == tempChargement2){
+			animation.part1();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 8){
+			animation.part2();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 14){
+			animation.part3();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 60){
+			animation.part4();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 95){
+			animation.part5();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 107){
+			animation.part4();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 112){
+			//Cristal
+			animation.part6();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 129){
+			//ilma court
+			animation.part7();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 137){
+			//ilma arrive place du village
+			animation.part8();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 158){
+			//azahara arrive
+			animation.part9();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 162){//165
+			//main
+			animation.part10();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 171){
+			//ilma Calin
+			animation.part11();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 176){//179
+			//ilma parle
+			animation.part12();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 199){
+			//wido parle
+			animation.part13();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 236){
+			//rentrent chez azahara
+			animation.part14();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 240){
+			//Azahara appelle orio
+			animation.maisonVide();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 251){
+			//Orio arrive
+			animation.part15();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 259){
+			//Orio et azahara parlent
+			animation.part16();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 320){
+			//Orio allongé
+			animation.part17();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 333){
+			//azahara endort orio
+			animation.part18();
+		}
+		if(chrono1.getTimeStamp() == tempChargement2 + 341){
+			//Orio ferme les yeux
+			animation.part19();
+		}
+		//Fin du son
+		if(chrono1.getTimeStamp() == tempChargement2 + 375){
+			//animation.part18();
+			console.log("fin son");
+			
+			animation.fin();
+			chrono1.pause();
+			clearInterval(time);
+		}
+	}
+	
 	source.onended = function(){
 		//Lancement du jeu 1
 		var jeu1st = new Jeu1();
@@ -68,13 +180,54 @@ Narration.prototype.part1 = function(){
 	}
 	//On vide le canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillText("Première partie de narration", canvas.width/2, canvas.height/2);
+	// ctx.fillText("Première partie de narration", canvas.width/2, canvas.height/2);
 };
 
 Narration.prototype.part2 = function(){
-	//Retire le background
-	var background = document.getElementById("bg");
-	background.style.visibility = "hidden";
+	var chrono2 = new Chrono();
+	chrono2.init(0);
+	chrono2.start();
+	var tempChargement2 = 2;
+
+	/*
+	*
+	* Animation premiere partie narration
+	*	On lance chaque animation en fonction du temps (en secondes) écoulé
+	*
+	*/
+	var time = window.setInterval(anim, 1000);
+
+	var animation = new Animation2();
+
+	function anim(){
+		console.log(chrono2.getTimeStamp());
+		//1ere animation
+		if(chrono2.getTimeStamp() == tempChargement2 + 9){
+			//Retire le background
+			var background = document.getElementById("bg");
+			background.style.visibility = "hidden";
+			//Orio foret
+			animation.part1();
+		}
+		if(chrono2.getTimeStamp() == tempChargement2 + 55){
+			//Orio marche
+			animation.part2();
+		}
+		if(chrono2.getTimeStamp() == tempChargement2 + 77){
+			//Orio accelere
+			animation.part3();
+		}
+		if(chrono2.getTimeStamp() == tempChargement2 + 83){
+			//Orio cogne mur
+			animation.part4();
+		}
+		if(chrono2.getTimeStamp() == tempChargement2 + 111){
+			animation.fin();
+			chrono2.pause();
+			clearInterval(time);
+		}
+	}
+
 	//Création de la source
 	source = context.createBufferSource();
 	panner = context.createPanner();
@@ -96,11 +249,63 @@ Narration.prototype.part2 = function(){
 		jeu2.instructions();
 	}
 	//On vide le canvas
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillText("2e partie de narration", canvas.width/2, canvas.height/2);
+	// ctx.clearRect(0, 0, canvas.width, canvas.height);
+	// ctx.fillText("2e partie de narration", canvas.width/2, canvas.height/2);
 };
 
 Narration.prototype.part3 = function(){
+	var chrono3 = new Chrono();
+	chrono3.init(0);
+	chrono3.start();
+	var tempChargement3 = 1;
+
+	/*
+	*
+	* Animation premiere partie narration
+	*	On lance chaque animation en fonction du temps (en secondes) écoulé
+	*
+	*/
+	var time = window.setInterval(anim, 1000);
+
+	var animation = new Animation3();
+
+	function anim(){
+		console.log(chrono3.getTimeStamp());
+		//1ere animation
+		if(chrono3.getTimeStamp() == tempChargement3){
+			//Orio foret mur cassé
+			animation.part1();
+		}
+		if(chrono3.getTimeStamp() == tempChargement3 + 10){
+			//Orio marche
+			animation.part2();
+		}
+		if(chrono3.getTimeStamp() == tempChargement3 + 24){
+			//porte
+			animation.part3();
+		}
+		if(chrono3.getTimeStamp() == tempChargement3 + 29){
+			//Orio ouvre porte
+			animation.part4();
+		}
+		if(chrono3.getTimeStamp() == tempChargement3 + 38){
+			//Orio prend crochet
+			animation.part5();
+		}
+		if(chrono3.getTimeStamp() == tempChargement3 + 45){
+			//Orio essaie crocheter serrure
+			animation.part6();
+		}
+		if(chrono3.getTimeStamp() == tempChargement3 + 54){
+			//Orio tete
+			animation.part7();
+		}
+		if(chrono3.getTimeStamp() == tempChargement3 + 64){
+			animation.fin();
+			chrono3.pause();
+			clearInterval(time);
+		}
+	}
 	//Création de la source
 	source = context.createBufferSource();
 	panner = context.createPanner();

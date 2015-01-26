@@ -24,7 +24,7 @@ window.onload = function(){
 
 	var background = document.getElementById("bg");
 	background.style.visibility = "hidden";
-
+	// setAudioSource(source, 0, urlListeIntro);
 	//On démarre le jeu
 	var casque1 = new Casque();
 	casque1.init();

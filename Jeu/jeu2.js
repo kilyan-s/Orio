@@ -3,6 +3,8 @@ var lancementJeu2 = false;
 //Lorsqu'on appuie sur F pour relire les instructions avant la fin de celles-ci il y a deux son qui se jouent en meme temps. Cette variable permet de bloquer la lecture du 2e son
 var relireInstruction2 = false;
 var nbSons;
+//Pour augmenter le nb de sons à chaque séquence
+var nbSonsSequence = 3;
 var ordreSons;
 //TOUCHES
 var nbTouches;
@@ -132,7 +134,7 @@ Jeu2.prototype.init = function() {
 
 	function relanceSon(){
 		//CHANGER
-		if(nbSons == 4){
+		if(nbSons == nbSonsSequence){
 			window.addEventListener("keydown", keyboardJeu2, false);
 		}else{
 			console.log("Nbsons "+nbSons);
@@ -178,9 +180,13 @@ Jeu2.prototype.init = function() {
 	function finJeuWin() {
 		//On vide le canvas
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		//Message visuel Victoire
+		ctx.font = "bold 15px Arial";
 		ctx.textAlign = 'center';
-	 	ctx.fillText("Félicitiation vous avez évité tous les obstacles !", canvas.width/2, canvas.height/2);
-	 	console.log("Jeu Win");
+		ctx.fillStyle = "rgba(255,255,255,0.65)";
+ 		ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
+ 		ctx.fillStyle = "rgba(24,109,148,1)";
+	 	ctx.fillText("Félicitation vous avez brisé le mur !", canvas.width/2, (canvas.height/2 - 25));
 
 	 	victoire2 = 1;
 	 	// console.log(sourceFond);
@@ -201,11 +207,16 @@ Jeu2.prototype.init = function() {
 
 	function finJeuLose(){
 		//On vide le canvas
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		// ctx.clearRect(0, 0, canvas.width, canvas.height);
+		//Message visuel perdu
+		ctx.font = "bold 15px Arial";
 		ctx.textAlign = 'center';
-	 	ctx.fillText("Vous avez perdu !", canvas.width/2, canvas.height/2);
-	 	ctx.fillText("Appuyez sur espace pour relancer le jeu!", canvas.width/2, canvas.height/3);
-	 	console.log("Jeu Lose");
+		ctx.fillStyle = "rgba(255,255,255,0.65)";
+ 		ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
+	 	ctx.fillStyle = "rgba(24,109,148,1)";
+	 	ctx.fillText("Vous avez perdu !", canvas.width/2, (canvas.height/2 - 40));
+	 	ctx.fillText("Appuyez sur espace pour relancer le jeu!", canvas.width/2, (canvas.height/2 ));
+
 	 	lancementJeu2 = false;
 	 	// sourceFond.stop();
 	 	// sourceFond = null;
@@ -245,6 +256,7 @@ Jeu2.prototype.init = function() {
 		sequence3 = false;
 
 		nbErreurs = 0;
+		nbSonsSequence = 3; 
 	}
 
 /*******
@@ -289,7 +301,14 @@ Jeu2.prototype.init = function() {
 				}
 				//Sinon le nombre d'erreur = 3 alors le joueur doit recommencer completement le jeu
 				else{
-					finJeuLose();
+						source = context.createBufferSource();
+						source.connect(panner);
+						setAudioSource2(source, 6, fileList2);
+						gain.gain.value = 5;
+						source.start();
+						source.onended = function(){
+							finJeuLose();
+						}
 				}
 				return;	
 			}
@@ -308,6 +327,7 @@ Jeu2.prototype.init = function() {
 			source.onended = function(){
 				//Si aucune séquence n'a été validée
 				if(sequence1 == false && sequence2 == false && sequence3 == false){
+					nbSonsSequence++;
 					//Séquence 1 validée
 					console.log("Séquence 1 valide"); 
 					sequence1 = true;
@@ -320,6 +340,7 @@ Jeu2.prototype.init = function() {
 				}
 				//Si la séquence 1 a déjà été validé
 				else if (sequence1 == true && sequence2 == false && sequence3 == false){
+					nbSonsSequence++;
 					//Séquence 1 validée
 					console.log("Séquence 2 valide"); 
 					sequence2 = true;
@@ -458,7 +479,7 @@ Jeu2.prototype.init = function() {
 
 		//Si l'utilisateur a dejà appuyé sur 5 touches on verifie la séquence
 		//CHANGER
-		if(nbTouches >= 4){
+		if(nbTouches >= nbSonsSequence){
 			source.onended = function() {
 				verifSequence();
 				window.removeEventListener("keydown", keyboardJeu2);

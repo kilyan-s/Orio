@@ -179,10 +179,10 @@ ModeJeu.prototype.init = function(){
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				//On affiche le message de validation du mode de jeu
 				if(mode == 0){
-					ctx.fillText("Vous avez validé le mode 1 joueur", canvas.width/2, canvas.height/2);
+					// ctx.fillText("Vous avez validé le mode 1 joueur", canvas.width/2, canvas.height/2);
 				} else if ( mode == 1){
 					//On affiche le nouveau message
-					ctx.fillText("Vous avez validé le mode 2 joueurs", canvas.width/2, canvas.height/2);
+					// ctx.fillText("Vous avez validé le mode 2 joueurs", canvas.width/2, canvas.height/2);
 				}
 				//On arrete le timer
 				window.clearInterval(timer);
@@ -193,7 +193,7 @@ ModeJeu.prototype.init = function(){
 				//Lancement de la premiere phase de narration
 				var narration = new Narration();
 				narration.init();
-				narration.part1();
+				narration.part3();
 				/*var jeu = new Jeu4();
 				jeu.instructions();*/
 				break;
