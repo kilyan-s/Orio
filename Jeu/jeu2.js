@@ -23,6 +23,11 @@ var currentTime;
 //context = new webkitAudioContext();
 var Jeu2 = function(){};
 
+var backgroundJ2 = new Image();
+backgroundJ2.src = "img/jeu2/bg.svg";
+
+var imgPerso = new Image();
+imgPerso.src = "img/jeu2/orioJeu2.svg";
 
 Jeu2.prototype.init = function() {
 	//ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -31,19 +36,9 @@ Jeu2.prototype.init = function() {
 	*	AFFICHAGE  JEU 2
 	*
 	***/
-	var backgroundJ2 = new Image();
-	backgroundJ2.src = "img/jeu2/jeu2.svg";
-
-	var mur = new Image();
-	mur.src = "img/jeu2/jeu2_mur.svg";
-
-	var imgPerso = new Image();
-	imgPerso.src = "img/jeu1/perso.svg";
-
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.drawImage(backgroundJ2, 0, 0);
-	ctx.drawImage(mur, 0, 0);
-	ctx.drawImage(imgPerso, 333, 364);
+	ctx.drawImage(imgPerso, 337, 445);
 
 
 
@@ -64,7 +59,8 @@ Jeu2.prototype.init = function() {
 		"sons/jeu2/percute.wav",
 		"sons/jeu2/ambiance.wav",
 		"sons/commun/recommencer.mp3",
-		"sons/jeu2/alasuite.wav"
+		"sons/jeu2/alasuite.wav",
+		"sons/commun/succes.mp3"
 	];
 
 	/******
@@ -179,14 +175,14 @@ Jeu2.prototype.init = function() {
 
 	function finJeuWin() {
 		//On vide le canvas
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		// ctx.clearRect(0, 0, canvas.width, canvas.height);
 		//Message visuel Victoire
 		ctx.font = "bold 15px Arial";
 		ctx.textAlign = 'center';
-		ctx.fillStyle = "rgba(255,255,255,0.65)";
- 		ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
+		ctx.fillStyle = "rgba(255,255,255,0.8)";
+ 		ctx.fillRect ((canvas.width/2 - 207), (canvas.height/4 - 100), 414, 147);
  		ctx.fillStyle = "rgba(24,109,148,1)";
-	 	ctx.fillText("Félicitation vous avez brisé le mur !", canvas.width/2, (canvas.height/2 - 25));
+	 	ctx.fillText("Félicitation vous avez brisé le mur !", canvas.width/2, (canvas.height/4 - 25));
 
 	 	victoire2 = 1;
 	 	// console.log(sourceFond);
@@ -197,12 +193,22 @@ Jeu2.prototype.init = function() {
 	 	//On retire l'event listener pour arreter les déplacements du joueur
 	 	window.removeEventListener("keydown", keyboardJeu2);
 	 	//On réinitialise la position du lsitener et du panner
-	 	listener.setPosition(0,2,0);
-	 	panner.setPosition(0,0,0);
+	 	listener.setPosition(0,0,0);
+	 	panner.setPosition(0,2,0);
 	 	//Lancement de la 2e partie de narration
-	 	var narration = new Narration();
-	 	narration.init();
-	 	narration.part3();
+	 	var sourceSucces = context.createBufferSource();
+	 	var pannerSucces = context.createPanner();
+	 	sourceSucces.connect(pannerSucces);
+	 	pannerSucces.connect(context.destination);
+	 	setAudioSource(sourceSucces, 10, fileList2);
+	 	sourceSucces.start();
+
+	 	sourceSucces.onended = function(){
+	 		//Lancement de la 3e partie de narration
+		 	var narration = new Narration();
+		 	narration.init();
+		 	narration.part3();
+	 	}
 	}
 
 	function finJeuLose(){
@@ -515,17 +521,16 @@ Jeu2.prototype.init = function() {
 
 };
 
-
+var bgInstruction2 = new Image();
+bgInstruction2.src = "img/jeu2/jeu2_instructions.svg";
 Jeu2.prototype.instructions = function() {
 	/***
 	*
 	*	AFFICHAGE INSTRUCTIONS JEU 2
 	*
 	***/
-	var bgInstruction = new Image();
-	bgInstruction.src = "img/jeu2/jeu2_instructions.svg"
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.drawImage(bgInstruction, 0, 0);
+	// ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.drawImage(bgInstruction2, 0, 0);
 
 	/***
 	*
@@ -555,6 +560,12 @@ Jeu2.prototype.instructions = function() {
 	sourceFond.loop = true;
 	sourceFond.start();
 	
+	pannerInstructions = context.createPanner();
+	gainInstructions = context.createGain();
+	gainInstructions.gain.value = 9;
+	pannerInstructions.connect(gainInstructions);
+	gainInstructions.connect(context.destination);
+
 
 	lireInstructions();
 	function lireInstructions(){

@@ -95,7 +95,7 @@ Jeu1.prototype.init = function() {
 		"sons/jeu1/toucheMur.wav",
 		"sons/commun/perdu.mp3",
 		"sons/commun/recommencer.mp3",
-		"sons/jeu1/succes.mp3"
+		"sons/commun/succes.mp3"
 	];
 	//Interval pour l'animation
 	var interval;
@@ -297,7 +297,7 @@ Jeu1.prototype.init = function() {
 		
 
 	function relanceSon(){
-		if(nbObstacles >= 0 && vie != 0){
+		if(nbObstacles >= 5 && vie != 0){
 			source.stop();
 			clearInterval(interval);
 			finJeuWin();
@@ -562,7 +562,7 @@ Jeu1.prototype.init = function() {
 
 	*******/
 	function verifKey1(event){
-		console.log("VERIFKEY1");
+		// console.log("VERIFKEY1");
 		touche = String.fromCharCode(event.keyCode);
 		switch(touche){
 			case "F":
@@ -637,14 +637,14 @@ Jeu1.prototype.init = function() {
 *
 *
 ***/
+var bgInstruction = new Image();
+bgInstruction.src = "img/jeu1/jeu1_instructions.svg";
 Jeu1.prototype.instructions = function() {
 	/***
 	*
 	*	AFFICHAGE INSTRUCTIONS JEU 1
 	*
 	***/
-	var bgInstruction = new Image();
-	bgInstruction.src = "img/jeu1/jeu1_instructions.svg"
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.drawImage(bgInstruction, 0, 0);
 

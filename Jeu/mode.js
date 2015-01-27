@@ -100,17 +100,10 @@ ModeJeu.prototype.init = function(){
 		ctx.drawImage(coopImg, 404.5, 310);
 		ctx.drawImage(explication, 192.5, 397);
 
-		// ctx.fillStyle = "rgba(255,255,255,0.65)";
- 	// 	ctx.fillRect (192.5, 397, 414, 147);
-
-		//console.log(nuage1.positionX);
 		deplacer(nuage1);
 		deplacer(nuage2);
 		deplacer(nuage3);
 		deplacer(nuage4);
-		//rotation(soleil);
-
-		// console.log(soleil.positionX);
 	}
 
 	// console.log(mode);
@@ -193,7 +186,9 @@ ModeJeu.prototype.init = function(){
 				//Lancement de la premiere phase de narration
 				var narration = new Narration();
 				narration.init();
-				narration.part3();
+				narration.part1();
+				// narration.part3();
+				// narration.part4();
 				/*var jeu = new Jeu4();
 				jeu.instructions();*/
 				break;

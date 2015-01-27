@@ -99,6 +99,69 @@ Animation1.prototype.part2 = function() {
 		deplacerMere(mere);
 	}
 };
+
+//Chambre porte fermé
+Animation1.prototype.porteFerme = function() {
+	window.clearInterval(timer);
+
+	var persoImg = new Image();
+	persoImg.src = "img/animation/chambre/child.svg";
+	var perso = {
+		positionX : 238,
+		positionY : 478,
+		vitesse : 0.3,
+	};
+
+	var mereImg = new Image();
+	mereImg.src = "img/animation/chambre/mere.svg";
+	var mere = {
+		positionX : 348,
+		positionY : 125,
+		vitesse : 0.15,
+	};
+
+	var limiteD = perso.positionX+5;
+	var limiteG = perso.positionX-5;
+
+	var limiteDM = mere.positionX+5;
+	var limiteGM = mere.positionX-5;
+
+	var bg = new Image();
+	bg.src = "img/animation/chambre/bg.svg";
+	
+	function deplacer (nomObjet){
+		nomObjet.positionX += nomObjet.vitesse;
+		if(nomObjet.positionX >= limiteD) {
+			nomObjet.vitesse *= -1;
+		} 
+		else if(nomObjet.positionX <= limiteG){
+			nomObjet.vitesse *= -1;
+		}
+	}
+
+	function deplacerMere (nomObjet){
+		nomObjet.positionX += nomObjet.vitesse;
+		if(nomObjet.positionX >= limiteDM) {
+			nomObjet.vitesse *= -1;
+		} 
+		else if(nomObjet.positionX <= limiteGM){
+			nomObjet.vitesse *= -1;
+		}
+	}
+	timer = window.setInterval(animation, 30);
+
+	function animation() {
+		ctx.clearRect(0,0, canvas.width, canvas.height);
+
+		ctx.drawImage(bg, 0, 0);
+		ctx.drawImage(persoImg, perso.positionX, perso.positionY);
+		ctx.drawImage(mereImg, mere.positionX, mere.positionY);
+
+		deplacer(perso);
+		deplacerMere(mere);
+	}
+};
+
 //Mere près du lit
 Animation1.prototype.part3 = function() {
 	clearInterval(timer);
@@ -126,7 +189,7 @@ Animation1.prototype.part3 = function() {
 	var limiteGM = mere.positionX-5;
 
 	var bg = new Image();
-	bg.src = "img/animation/chambre/bg2.svg";
+	bg.src = "img/animation/chambre/bg.svg";
 	
 	function deplacer (nomObjet){
 		nomObjet.positionX += nomObjet.vitesse;
@@ -220,7 +283,7 @@ Animation1.prototype.part4 = function() {
 		}
 	}
 
-	timer = window.setInterval(animation, 30);
+	timer = window.setInterval(animation, 100);
 	
 	function animation() {
 		ctx.clearRect(0,0, canvas.width, canvas.height);
@@ -1075,7 +1138,7 @@ Animation1.prototype.part18 = function() {
 	orioImg.src = "img/animation/AzaharaReve/orio.svg";
 	var orio = {
 		positionX : 60,
-		positionY : 95,
+		positionY : 99.19,
 		vitesse : 0.35
 	};
 
@@ -1127,6 +1190,7 @@ Animation1.prototype.part18 = function() {
 
 		deplacer(orio);
 		deplacerA(azahara);
+		// console.log(orio.positionY);
 	}
 };
 //Orio yeux fermés
@@ -1190,11 +1254,25 @@ Animation1.prototype.part19 = function() {
 		deplacerA(azahara);
 	}
 };
+//Fondu noir
+Animation1.prototype.fondu = function() {
+	clearInterval(timer);
+	var alpha = 1;
+
+	timer = window.setInterval(animation, 70);
+
+	function animation() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = "rgba(0, 0, 0,"+ alpha +")";
+		ctx.fillRect (0, 0, canvas.width, canvas.height);
+		alpha -= 0.01;
+	}
+}
 
 //Fin de la 1ere partie de narration
 Animation1.prototype.fin = function() {
 	clearInterval(timer);
-	ctx.clearRect(0,0, canvas.width, canvas.height);
+	// ctx.clearRect(0,0, canvas.width, canvas.height);
 	// ctx.fillStyle("rgba(0, 0, 0, 0.9)");
 	// ctx.drawRect(0,0, canvas.width, canvas.height);
 	// console.log("Animation1 Fin");

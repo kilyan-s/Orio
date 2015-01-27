@@ -49,7 +49,7 @@ Animation2.prototype.part2 = function() {
 	var orio = {
 		positionX : 0,
 		positionY : 60,
-		vitesse : -1.5
+		vitesse : 1.5
 	};
 
 	var limiteH = orio.positionY-20;
@@ -75,6 +75,7 @@ Animation2.prototype.part2 = function() {
 
 	function defiler (nomObjet){
 		nomObjet.positionY -= nomObjet.vitesse;
+		// console.log("positionY: " + nomObjet.positionY);
 	}
 
 	timer = window.setInterval(animation, 30);
@@ -87,6 +88,7 @@ Animation2.prototype.part2 = function() {
 
 		courrir(orio);
 		defiler(bg);
+		orio.vitesse -= 0.002
 	}
 };
 
@@ -98,7 +100,7 @@ Animation2.prototype.part3 = function() {
 	var orio = {
 		positionX : 0,
 		positionY : 60,
-		vitesse : 3
+		vitesse : 4
 	};
 
 	var limiteH = orio.positionY-20;
@@ -108,7 +110,7 @@ Animation2.prototype.part3 = function() {
 	bgImg.src = "img/animation/orioCourt/bg.svg";
 	var bg = {
 		positionX : 0,
-		positionY : 0,
+		positionY : -561,
 		vitesse : 5
 	};
 	
@@ -145,8 +147,8 @@ Animation2.prototype.part4 = function() {
 	var orioImg = new Image();
 	orioImg.src = "img/animation/orioMur/orio.svg";
 	var orio = {
-		positionX : 320,
-		positionY : 478,
+		positionX : 337,
+		positionY : 445,
 		vitesse : 0.3,
 	};
 
@@ -181,5 +183,5 @@ Animation2.prototype.part4 = function() {
 //fin
 Animation2.prototype.fin = function() {
 	clearInterval(timer);
-	ctx.clearRect(0,0, canvas.width, canvas.height);
+	//ctx.clearRect(0,0, canvas.width, canvas.height);
 };

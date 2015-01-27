@@ -47,7 +47,7 @@ Animation3.prototype.part2 = function() {
 	var orio = {
 		positionX : 0,
 		positionY : 60,
-		vitesse : -1.5
+		vitesse : -2.3
 	};
 
 	var limiteH = orio.positionY-20;
@@ -89,10 +89,10 @@ Animation3.prototype.part2 = function() {
 
 };
 //porte en bois
+var porte = new Image();
+porte.src = "img/animation/porteMaison/bg.svg";
 Animation3.prototype.part3 = function() {
 	clearInterval(timer);
-	var porte = new Image();
-	porte.src = "img/animation/porteMaison/bg.svg";
 
 	ctx.clearRect(0,0, canvas.width, canvas.height);
 	ctx.drawImage(porte, 0, 0);
@@ -282,5 +282,5 @@ Animation3.prototype.part7 = function() {
 //fin
 Animation3.prototype.fin = function() {
 	clearInterval(timer);
-	ctx.clearRect(0,0, canvas.width, canvas.height);
+	// ctx.clearRect(0,0, canvas.width, canvas.height);
 };

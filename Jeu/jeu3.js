@@ -3,12 +3,58 @@
 
 **/
 var lancementJeu3 = false;
+var pannerErreur, gainErreur;
+
 var Jeu3 = function(){};
 
+var backgroundJ3 = new Image();
+backgroundJ3.src = "img/jeu3/bg.svg";
+
+var backgroundJ3Masque = new Image();
+backgroundJ3Masque.src = "img/jeu3/bg_masque.svg";
+
+var mainGImg = new Image();
+mainGImg.src = "img/jeu3/gauche.svg";
+
+var mainDImg = new Image();
+mainDImg.src = "img/jeu3/droite.svg";
+
 Jeu3.prototype.init = function() {
+	/***
+	*
+	*	AFFICHAGE JEU 3
+	*
+	***/
+	var mainG = {
+		positionX : -138,
+		positionY : 230
+	};
+	var mainD = {
+		positionX : 390,
+		positionY : 280
+	};
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	var timer = window.setInterval(animation, 50);
+
+	function animation(){
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.drawImage(backgroundJ3, 0, 0);
+		ctx.drawImage(mainGImg, mainG.positionX, mainG.positionY);
+		ctx.drawImage(mainDImg, mainD.positionX, mainD.positionY);
+		ctx.drawImage(backgroundJ3Masque, 0, 0);
+	}
+	
 	sourceFond.stop();
 	console.log("Jeu 3");
 	var nbErreurs3 = 0;
+	/* Erreur */
+	pannerErreur = context.createPanner();
+	gainErreur = context.createGain();
+	gainErreur.gain.value = 5;
+	pannerErreur.connect(gainErreur);
+	gainErreur.connect(context.destination);
 
 	/*******
 		Position du crochet et des goupilles eh Hz
@@ -41,7 +87,11 @@ Jeu3.prototype.init = function() {
 
 	var fileList3 = [
 		"sons/jeu3/son.wav",
-		"sons/commun/recommencer.mp3"
+		"sons/commun/recommencer.mp3",
+		"sons/commun/succes.mp3",
+		"sons/jeu3/sonErreur.mp3",
+		"sons/jeu3/crochetVrai.mp3",
+		"sons/jeu3/crochetFaux.mp3",
 	];
 
 	//
@@ -57,7 +107,7 @@ Jeu3.prototype.init = function() {
 	/*
 		Il faut re-créer le context à chaque fois sinon il n'est pas visible dans les autres fichiers
 	*/
-	context = new webkitAudioContext;
+	//context = new webkitAudioContext;
 	source = context.createBufferSource();
 	panner = context.createPanner();
 	listener = context.listener;
@@ -143,42 +193,91 @@ Jeu3.prototype.init = function() {
 			console.log("Goupille 1");
 			goupille1bool = true; 
 			filtre86.frequency.value = 76;
-			//On passe au 2e EQ
-			//On passe le gain de l'EQ 86Hz à 0
-			filtre86.gain.value = 0;
-			//On change la frequence du filtre lowpass
-			filtrelow.frequency.value = 150;
-			//On passe le gain de l'EQ 132Hz à 11
-			filtre132.gain.value = 11;
+		 	//Son succes
+		 	var sourceSucces = context.createBufferSource();
+		 	var pannerSucces = context.createPanner();
+		 	sourceSucces.connect(pannerSucces);
+		 	pannerSucces.connect(context.destination);
+		 	setAudioSource(sourceSucces, 4, fileList3);
+		 	sourceSucces.start();
+
+		 	sourceSucces.onended = function(){
+		 		//On passe au 2e EQ
+				//On passe le gain de l'EQ 86Hz à 0
+				filtre86.gain.value = 0;
+				//On change la frequence du filtre lowpass
+				filtrelow.frequency.value = 150;
+				//On passe le gain de l'EQ 132Hz à 11
+				filtre132.gain.value = 11;
+		 	}
+			
 
 		}
 		else if (filtre132.frequency.value >= (goupille2 - 1) && filtre132.frequency.value <= (goupille2 + 1)){
 			console.log("Goupille 2");
 			goupille2bool = true;
 			filtre132.frequency.value = 122;
-			//On passe à l'EQ 3
-			filtre132.gain.value = 0;
-			filtrelow.frequency.value = 200;
-			filtre175.gain.value = 8;
+			//Son succes
+		 	var sourceSucces = context.createBufferSource();
+		 	var pannerSucces = context.createPanner();
+		 	sourceSucces.connect(pannerSucces);
+		 	pannerSucces.connect(context.destination);
+		 	setAudioSource(sourceSucces, 4, fileList3);
+		 	sourceSucces.start();
+
+		 	sourceSucces.onended = function(){
+		 		//On passe à l'EQ 3
+				filtre132.gain.value = 0;
+				filtrelow.frequency.value = 200;
+				filtre175.gain.value = 8;
+		 	}
+			
 		}
 		else if(filtre175.frequency.value >= (goupille3 - 2) && filtre175.frequency.value <= (goupille3 + 3)){
 			console.log("Goupille 3");
 			goupille3bool = true;
 			filtre175.frequency.value = 153;
-			//On passe a l'EQ 4
-			filtre175.gain.value = 0;
-			filtrelow.frequency.value = 260;
-			filtre220.gain.value = 8;
+			//Son succes
+		 	var sourceSucces = context.createBufferSource();
+		 	var pannerSucces = context.createPanner();
+		 	sourceSucces.connect(pannerSucces);
+		 	pannerSucces.connect(context.destination);
+		 	setAudioSource(sourceSucces, 4, fileList3);
+		 	sourceSucces.start();
+
+		 	sourceSucces.onended = function(){
+		 		//On passe a l'EQ 4
+				filtre175.gain.value = 0;
+				filtrelow.frequency.value = 260;
+				filtre220.gain.value = 8;
+		 	}
+			
 		}
 		else if(filtre220.frequency.value >= (goupille4 - 1) && filtre220.frequency.value <= (goupille4 + 4)){
 			console.log("Goupille 4");
 			goupille4bool = true;
+
 			filtre220.frequency.value = 200;
+			//Son succes
+		 	var sourceSucces = context.createBufferSource();
+		 	var pannerSucces = context.createPanner();
+		 	sourceSucces.connect(pannerSucces);
+		 	pannerSucces.connect(context.destination);
+		 	setAudioSource(sourceSucces, 4, fileList3);
+		 	sourceSucces.start();
 		}
 		else{
 			console.log("Error");
 			nbErreurs3 ++;
 			console.log(nbErreurs3);
+			//Son crochet raté
+		 	var sourceEchec = context.createBufferSource();
+		 	var pannerSucces = context.createPanner();
+		 	sourceEchec.connect(pannerSucces);
+		 	pannerSucces.connect(context.destination);
+		 	setAudioSource(sourceEchec, 5, fileList3);
+		 	sourceEchec.start();
+
 			//Si le joueur fait moins de 5 erreur le jeu continue
 			if(nbErreurs3 <= 5){
 
@@ -210,15 +309,29 @@ function finJeuWin(){
 	ctx.font = "bold 15px Arial";
 	ctx.textAlign = 'center';
 	ctx.fillStyle = "rgba(255,255,255,0.65)";
-	ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
+	ctx.fillRect((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
 	ctx.fillStyle = "rgba(24,109,148,1)";
  	ctx.fillText("Félicitation vous avez ouvert la porte !", canvas.width/2, (canvas.height/2 - 25));
 	 	
 	source.stop();
+	clearInterval(timer);
 	window.removeEventListener("keydown", keyboardJeu3);
-	//Lancement de la suite de la narration
-	var narration = new Narration();
-	narration.part4();
+	//On réinitialise la position du lsitener et du panner
+ 	listener.setPosition(0,0,0);
+ 	panner.setPosition(0,2,0);
+ 	//Lancement de la 2e partie de narration
+ 	var sourceSucces = context.createBufferSource();
+ 	var pannerSucces = context.createPanner();
+ 	sourceSucces.connect(pannerSucces);
+ 	pannerSucces.connect(context.destination);
+ 	setAudioSource(sourceSucces, 2, fileList3);
+ 	sourceSucces.start();
+
+ 	sourceSucces.onended = function(){
+ 		//Lancement de la suite de la narration
+		var narration = new Narration();
+		narration.part4();
+ 	}
 }
 
 function finJeuLose(){
@@ -226,7 +339,7 @@ function finJeuLose(){
 	ctx.font = "bold 15px Arial";
 	ctx.textAlign = 'center';
 	ctx.fillStyle = "rgba(255,255,255,0.65)";
-		ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
+	ctx.fillRect ((canvas.width/2 - 207), (canvas.height/2 - 100), 414, 147);
  	ctx.fillStyle = "rgba(24,109,148,1)";
  	ctx.fillText("Vous avez perdu !", canvas.width/2, (canvas.height/2 - 40));
  	ctx.fillText("Appuyez sur espace pour relancer le jeu!", canvas.width/2, (canvas.height/2 ));			
@@ -235,6 +348,7 @@ function finJeuLose(){
 	lancementJeu3 = false;
 	//On arrete le son si il est en train de jouer
  	source.stop();
+ 	clearinterval(timer);
  	panner.setPosition(0,5,0);
  	listener.setPosition(0,0,0);
  	//Création de la source
@@ -267,9 +381,24 @@ function finJeuLose(){
 					//ON increment la fréquence du filtre
 					filtre86.frequency.value += 1;
 					console.log(filtre86.frequency.value);
+					//Animation
+					mainG.positionX += 1;
+					mainG.positionY -= 3;
+					console.log(mainG.positionX +" "+ mainG.positionY);
 					//Le max de la frequence du filtre est 96Hz
 					if (filtre86.frequency.value >= 96){
+						//Son erreur à droite
+					 	var sourceErreur = context.createBufferSource();
+					 	pannerErreur.setPosition(10,10,0);
+					 	sourceErreur.connect(pannerErreur);
+					 	setAudioSource(sourceErreur, 3, fileList3);
+					 	sourceErreur.start();
+
 						filtre86.frequency.value = 96; 
+
+						//Animation
+						mainG.positionX = -118;
+						mainG.positionY = 170 ;
 						console.log("Vous ne pouvez plus avancer");
 					}
 				}
@@ -278,8 +407,23 @@ function finJeuLose(){
 					console.log("Deplacer EQ2");
 					filtre132.frequency.value += 1;
 					console.log(filtre132.frequency.value);
+					//Animation
+					mainG.positionX += 1;
+					mainG.positionY -= 3;
+					console.log(mainG.positionX +" "+ mainG.positionY);
 					if (filtre132.frequency.value >= 142){
+						//Son erreur à droite
+					 	var sourceErreur = context.createBufferSource();
+					 	pannerErreur.setPosition(10,10,0);
+					 	sourceErreur.connect(pannerErreur);
+					 	pannerErreur.connect(context.destination);
+					 	setAudioSource(sourceErreur, 3, fileList3);
+					 	sourceErreur.start();
+
 						filtre132.frequency.value = 142; 
+						//Animation
+						mainG.positionX = -118;
+						mainG.positionY = 170;
 						console.log("Vous ne pouvez plus avancer");
 					}
 				}
@@ -288,8 +432,22 @@ function finJeuLose(){
 					console.log("Deplacer EQ3");
 					filtre175.frequency.value += 1;
 					console.log(filtre175.frequency.value);
+					mainG.positionX += 1;
+					mainG.positionY -= 3;
+					console.log(mainG.positionX +" "+ mainG.positionY);
 					if (filtre175.frequency.value >= 198){
+						//Son erreur à droite
+					 	var sourceErreur = context.createBufferSource();
+					 	pannerErreur.setPosition(10,10,0);
+					 	sourceErreur.connect(pannerErreur);
+					 	pannerErreur.connect(context.destination);
+					 	setAudioSource(sourceErreur, 3, fileList3);
+					 	sourceErreur.start();
+
 						filtre175.frequency.value = 198; 
+						//Animation
+						mainG.positionX = -105;
+						mainG.positionY = 133 ;
 						console.log("Vous ne pouvez plus avancer");
 					}
 				}
@@ -298,8 +456,22 @@ function finJeuLose(){
 					console.log("Deplacer EQ4"); 
 					filtre220.frequency.value += 1;
 					console.log(filtre220.frequency.value);
+					mainG.positionX += 1;
+					mainG.positionY -= 3;
+					console.log(mainG.positionX +" "+ mainG.positionY);
 					if (filtre220.frequency.value >= 250){
+						//Son erreur à droite
+					 	var sourceErreur = context.createBufferSource();
+					 	pannerErreur.setPosition(10,10,0);
+					 	sourceErreur.connect(pannerErreur);
+					 	pannerErreur.connect(context.destination);
+					 	setAudioSource(sourceErreur, 3, fileList3);
+					 	sourceErreur.start();
+
 						filtre220.frequency.value = 250; 
+						//Animation
+						mainG.positionX = -106;
+						mainG.positionY = 150 ;
 						console.log("Vous ne pouvez plus avancer");
 					}
 				}
@@ -313,8 +485,23 @@ function finJeuLose(){
 					console.log("Deplacer EQ1");
 					filtre86.frequency.value -= 1;
 					console.log(filtre86.frequency.value);
+					//Animation
+					mainG.positionX -= 1;
+					mainG.positionY += 3;
+					console.log(mainG.positionX +" "+ mainG.positionY);
 					if (filtre86.frequency.value <= 76){
+						//Son erreur à gauche
+					 	var sourceErreur = context.createBufferSource();
+					 	pannerErreur.setPosition(-10,10,0);
+					 	sourceErreur.connect(pannerErreur);
+					 	pannerErreur.connect(context.destination);
+					 	setAudioSource(sourceErreur, 3, fileList3);
+					 	sourceErreur.start();
+
 						filtre86.frequency.value = 76; 
+						//Animation
+						mainG.positionX = -138;
+						mainG.positionY = 230;
 						console.log("Vous ne pouvez plus reculer");
 					}
 				}
@@ -323,8 +510,23 @@ function finJeuLose(){
 					console.log("Deplacer EQ2");
 					filtre132.frequency.value -= 1;
 					console.log(filtre132.frequency.value);
+					//Animation
+					mainG.positionX -= 1;
+					mainG.positionY += 3;
+					console.log(mainG.positionX +" "+ mainG.positionY);
 					if (filtre132.frequency.value <= 122){
-						filtre132.frequency.value = 122; 
+						//Son erreur à gauche
+					 	var sourceErreur = context.createBufferSource();
+					 	pannerErreur.setPosition(-10,10,0);
+					 	sourceErreur.connect(pannerErreur);
+					 	pannerErreur.connect(context.destination);
+					 	setAudioSource(sourceErreur, 3, fileList3);
+					 	sourceErreur.start();
+
+						filtre132.frequency.value = 122;
+						//Animation
+						mainG.positionX = -138;
+						mainG.positionY = 230;
 						console.log("Vous ne pouvez plus reculer");
 					}
 				}
@@ -333,8 +535,23 @@ function finJeuLose(){
 					console.log("Deplacer EQ3");
 					filtre175.frequency.value -= 1;
 					console.log(filtre175.frequency.value);
+					//Animation
+					mainG.positionX -= 1;
+					mainG.positionY += 3;
+					console.log(mainG.positionX +" "+ mainG.positionY);
 					if (filtre175.frequency.value <= 153){
+						//Son erreur à gauche
+					 	var sourceErreur = context.createBufferSource();
+					 	pannerErreur.setPosition(-10,10,0);
+					 	sourceErreur.connect(pannerErreur);
+					 	pannerErreur.connect(context.destination);
+					 	setAudioSource(sourceErreur, 3, fileList3);
+					 	sourceErreur.start();
+
 						filtre175.frequency.value = 153; 
+						//Animation
+						mainG.positionX = -150;
+						mainG.positionY = 267;
 						console.log("Vous ne pouvez plus reculer");
 					}
 				}
@@ -343,8 +560,23 @@ function finJeuLose(){
 					console.log("Deplacer EQ4");
 					filtre220.frequency.value -= 1;
 					console.log(filtre220.frequency.value);
+					//Animation
+					mainG.positionX -= 1;
+					mainG.positionY += 3;
+					console.log(mainG.positionX +" "+ mainG.positionY);
 					if (filtre220.frequency.value <= 200){
+						//Son erreur à gauche
+					 	var sourceErreur = context.createBufferSource();
+					 	pannerErreur.setPosition(-10,10,0);
+					 	sourceErreur.connect(pannerErreur);
+					 	pannerErreur.connect(context.destination);
+					 	setAudioSource(sourceErreur, 3, fileList3);
+					 	sourceErreur.start();
+
 						filtre220.frequency.value = 200; 
+						//Animation
+						mainG.positionX = -155;
+						mainG.positionY = 297;
 						console.log("Vous ne pouvez plus reculer");
 					}
 				}
@@ -384,17 +616,17 @@ function finJeuLose(){
 		}
 	}
 };
-
+var bgInstruction3 = new Image();
+bgInstruction3.src = "img/jeu3/jeu3_instructions.svg";
 Jeu3.prototype.instructions = function(){
 	/***
 	*
 	*	AFFICHAGE INSTRUCTIONS JEU 3
 	*
 	***/
-	var bgInstruction = new Image();
-	bgInstruction.src = "img/jeu3/jeu3_instructions.svg"
+
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.drawImage(bgInstruction, 0, 0);
+	ctx.drawImage(bgInstruction3, 0, 0);
 
 	/***
 	*
@@ -423,6 +655,12 @@ Jeu3.prototype.instructions = function(){
 	setAudioSource(sourceFond, 3, sonsJeu3Instructions);
 	sourceFond.loop = true;
 	sourceFond.start();
+
+	pannerInstructions = context.createPanner();
+	gainInstructions = context.createGain();
+	gainInstructions.gain.value = 9;
+	pannerInstructions.connect(gainInstructions);
+	gainInstructions.connect(context.destination);
 
 	lireInstructions();
 	function lireInstructions(){
