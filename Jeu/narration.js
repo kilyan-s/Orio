@@ -89,6 +89,7 @@ Narration.prototype.part1 = function(){
 			ctx.fillStyle = "rgba(0, 0, 0, 1)";
 		 	ctx.fillRect (0, 0, canvas.width, canvas.height);
 			// ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.textAlign ="center"; 
  			ctx.fillStyle = "rgba(255, 255, 255, 1)";
  			ctx.fillText("Chargement !", canvas.width/2, (canvas.height/2 - 25));	
 		}
@@ -170,7 +171,7 @@ Narration.prototype.part1 = function(){
 			//azahara endort orio
 			animation.part18();
 		}
-		if(chrono1.getTimeStamp() == tempChargement2 + 342){
+		if(chrono1.getTimeStamp() == tempChargement2 + 345){
 			//Orio ferme les yeux
 			animation.part19();
 		}
@@ -892,6 +893,6 @@ Narration.prototype.generique = function(){
 	source.start();
 
 	//On vide le canvas
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillText("Générique", canvas.width/2, canvas.height/2);
+	// ctx.clearRect(0, 0, canvas.width, canvas.height);
+	// ctx.fillText("Générique", canvas.width/2, canvas.height/2);
 };

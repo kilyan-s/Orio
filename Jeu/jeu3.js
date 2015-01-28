@@ -41,8 +41,8 @@ Jeu3.prototype.init = function() {
 	function animation(){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.drawImage(backgroundJ3, 0, 0);
-		ctx.drawImage(mainGImg, mainG.positionX, mainG.positionY);
 		ctx.drawImage(mainDImg, mainD.positionX, mainD.positionY);
+		ctx.drawImage(mainGImg, mainG.positionX, mainG.positionY);
 		ctx.drawImage(backgroundJ3Masque, 0, 0);
 	}
 	

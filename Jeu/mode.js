@@ -39,6 +39,7 @@ var soleil = {
 	positionY : 30,
 	angle : 360
 };
+
 soleilImg.src = "img/menu/sun.svg";
 
 var bandeau = new Image();
@@ -63,16 +64,14 @@ bg.src = "img/menu/bg.svg";
 
 //Deplacer le objets sur la scene
 function deplacer (nomObjet){
-		nomObjet.positionX += nomObjet.vitesse;
-		if(nomObjet.positionX >= 880) {
-			nomObjet.vitesse *= -1;
-			// console.log(nomObjet.positionX);
-		} 
-		else if(nomObjet.positionX <= -200){
-			nomObjet.vitesse *= -1;
-			// console.log("ok");
-		}
+	nomObjet.positionX += nomObjet.vitesse;
+	if(nomObjet.positionX >= 880) {
+		nomObjet.vitesse *= -1;
+	} 
+	else if(nomObjet.positionX <= -200){
+		nomObjet.vitesse *= -1;
 	}
+}
 
 ModeJeu.prototype.init = function(){
 	/*****
@@ -106,8 +105,6 @@ ModeJeu.prototype.init = function(){
 		deplacer(nuage4);
 	}
 
-	// console.log(mode);
-
 	/*****
 	*
 	*
@@ -118,8 +115,21 @@ ModeJeu.prototype.init = function(){
 	var sonsMode = [
 	"sons/mode/choixmode.mp3",
 	"sons/mode/mode1j.mp3",
-	"sons/mode/mode2j.mp3"
+	"sons/mode/mode2j.mp3",
+	"sons/menu/fond.mp3"
 	];
+	var sourceFondMenu = context.createBufferSource();
+	var pannerFondMenu = context.createPanner();
+	var gainFondMenu = context.createGain();
+	gainFondMenu.gain.value = 0.5;
+
+	sourceFondMenu.connect(pannerFondMenu);
+	pannerFondMenu.connect(gainFondMenu);
+	gainFondMenu.connect(context.destination);
+
+	setAudioSource(sourceFondMenu, 3, sonsMode);
+	sourceFondMenu.loop = true;
+	sourceFondMenu.start();
 
 	//Création de la source
 	source = context.createBufferSource();
@@ -181,16 +191,18 @@ ModeJeu.prototype.init = function(){
 				window.clearInterval(timer);
 				//On retire le listener d'evenement clavier
 				window.removeEventListener("keydown", keyboardMode);
-
+				//On arrete le fond sonore
+				sourceFondMenu.stop();
 				//Fichier Narrattion.js
 				//Lancement de la premiere phase de narration
 				var narration = new Narration();
 				narration.init();
 				narration.part1();
 				// narration.part3();
+				// narration.part2();
 				// narration.part4();
-				/*var jeu = new Jeu4();
-				jeu.instructions();*/
+				// var jeu = new Jeu4();
+				// jeu.instructions();
 				break;
 			default:
 				return;

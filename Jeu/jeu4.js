@@ -1,6 +1,7 @@
 var lancementJeu4 = false;
 var Jeu4 = function(){};
 
+var pas = 1;
 //reverb pour éléments d'ambiance
 // pour la reverb
 var convolverGlobal;
@@ -18,6 +19,7 @@ var pannerfrigo;
 var pannereau;
 var pannertelephone;
 var pannerchat;
+var pannerPas;
 // Source pour la voix
 var source4;
 var sourceeau;
@@ -25,6 +27,9 @@ var sourcefrigo;
 var sourcetelephone;
 var sourceneon;
 var sourcechat;
+var sourcePas;
+
+var gainPas;
 // Gain reverb pour global
 var dryGainNodeGlobal;
 var wetGainNodeGlobal;
@@ -40,8 +45,10 @@ var listenery = 0;
 var listenerz = 0;
 
 // les coordonnées du panner, de la voix, elles sont aléatoires
-var x = Math.floor(Math.random() * (100) - 50);
-var y = Math.floor(Math.random() * (100) - 50);
+// var x = Math.floor(Math.random() * (100) - 50);
+// var y = Math.floor(Math.random() * (100) - 50);
+var x = 15;
+var y = 30;
 var z = -4;
 
 // Code pour faire apparaitre plus ou moins la reverb
@@ -60,22 +67,33 @@ var bufferList;
 
 var fileCount = 14;
 var fileList4 = [
-    "sons/jeu4/hugo/gen1.wav",
-    "sons/jeu4/hugo/gen2.wav",
-    "sons/jeu4/hugo/gen3.wav",
-    "sons/jeu4/hugo/gen4.wav",
-    "sons/jeu4/hugo/derriereloin.wav",
-    "sons/jeu4/hugo/derriereproche.wav",
-    "sons/jeu4/hugo/devantloin.wav",
-    "sons/jeu4/hugo/devantproche.wav",
-    "sons/jeu4/hugo/toutproche.wav",
-    "sons/jeu4/hugo/trouve.wav",
-    "sons/jeu4/ambiance/eau.wav",
-    "sons/jeu4/ambiance/frigo.wav",
-    "sons/jeu4/ambiance/neon.wav",
-    "sons/jeu4/ambiance/telephone.wav",
-    "sons/jeu4/ambiance/chat.wav",
-    "sons/narration/part5.mp3"
+    "sons/jeu4/hugo/gen1.mp3",
+    "sons/jeu4/hugo/gen2.mp3",
+    "sons/jeu4/hugo/gen3.mp3",
+    "sons/jeu4/hugo/gen4.mp3",
+    "sons/jeu4/hugo/gen5.mp3",
+    "sons/jeu4/hugo/gen6.mp3",
+    "sons/jeu4/hugo/gen7.mp3",
+    "sons/jeu4/hugo/gen8.mp3",
+    "sons/jeu4/hugo/gen9.mp3",
+    "sons/jeu4/hugo/gen10.mp3",
+    "sons/jeu4/hugo/gen11.mp3",
+    "sons/jeu4/hugo/gen12.mp3",
+    "sons/jeu4/hugo/derriereloin.mp3",
+    "sons/jeu4/hugo/derriereproche.mp3",
+    "sons/jeu4/hugo/devantloin.mp3",
+    "sons/jeu4/hugo/devantproche.mp3",
+    "sons/jeu4/hugo/toutproche.mp3",
+    "sons/jeu4/hugo/trouve.mp3",
+    "sons/jeu4/ambiance/eau.mp3",
+    "sons/jeu4/ambiance/frigo.mp3",
+    "sons/jeu4/ambiance/neon.mp3",
+    "sons/jeu4/ambiance/telephone.mp3",
+    "sons/jeu4/ambiance/chat.mp3",
+    "sons/narration/part5.mp3",
+    "sons/jeu4/pas/pas1.mp3",
+    "sons/jeu4/pas/pas2.mp3",
+    "sons/jeu4/pas/deuxpas.mp3"
 ];
 
 
@@ -138,14 +156,17 @@ Jeu4.prototype.init = function() {
 		ctx.clearRect(0,0, canvas.width, canvas.height);
 
 		ctx.drawImage(backgroundJ4, 0, 0);
+		//Rectangle noir pour assombrir l'ambiance
+		// ctx.drawRect(0, 0, canvas.width, canvas.height);
+		// ctx.fillStyle = "rgba(0,0,0,0.7)";
+ 	// 	ctx.fillRect (0, 0, canvas.width, canvas.height);
 
-		if(trouve == true){
-			ctx.drawImage(persoHugoJ4, (canvas.width/2 - persoHugoJ4.width/2), 20);
-		}
 		ctx.drawImage(nuage1ImgJ4, nuage1.positionX, nuage1.positionY);
 		ctx.drawImage(nuage2ImgJ4, nuage2.positionX, nuage2.positionY);
 		ctx.drawImage(nuage3ImgJ4, nuage3.positionX, nuage3.positionY);
-
+		if(trouve == true){
+			ctx.drawImage(persoHugoJ4, (canvas.width/2 - persoHugoJ4.width/2), 20);
+		}
 		deplacer(nuage1);
 		deplacer(nuage2);
 		deplacer(nuage3);
@@ -156,22 +177,87 @@ Jeu4.prototype.init = function() {
 	function gauche() {
 		listenerx -= 1;
 		listener.setPosition(listenerx, listenery, listenerz);
+		//Bruit de pas
+		sourcePas = context.createBufferSource();
+		sourcePas.connect(pannerPas);
+
+		if(pas == 1 ){
+			setAudioSource(sourcePas, 24, fileList4);	
+			pas = 0;
+		}else{
+			setAudioSource(sourcePas, 25, fileList4);	
+			pas = 1;
+		}
+		
+		pannerPas.setPosition(listenerx, listenery + 5, listenerz);
+		sourcePas.start();
 	}
 
 	function droite() {
 		listenerx += 1;
 		listener.setPosition(listenerx, listenery, listenerz);
+		//Bruit de pas
+		sourcePas = context.createBufferSource();
+		sourcePas.connect(pannerPas);
+
+		if(pas == 1 ){
+			setAudioSource(sourcePas, 24, fileList4);	
+			pas = 0;
+		}else{
+			setAudioSource(sourcePas, 25, fileList4);	
+			pas = 1;
+		}
+		
+		pannerPas.setPosition(listenerx, listenery + 5, listenerz);
+		sourcePas.start();
 	}
 
 	function arriere() {
 		listenery -= 1;
 		listener.setPosition(listenerx, listenery, listenerz);
+		//Bruit de pas
+		sourcePas = context.createBufferSource();
+		sourcePas.connect(pannerPas);
+
+		if(pas == 1 ){
+			setAudioSource(sourcePas, 24, fileList4);	
+			pas = 0;
+		}else{
+			setAudioSource(sourcePas, 25, fileList4);	
+			pas = 1;
+		}
+		
+		pannerPas.setPosition(listenerx, listenery + 5, listenerz);
+		sourcePas.start();
 	}
 
 	function avant() {
 		listenery += 1;
 		listener.setPosition(listenerx, listenery, listenerz);
+		//Bruit de pas
+		sourcePas = context.createBufferSource();
+		sourcePas.connect(pannerPas);
+
+		if(pas == 1 ){
+			setAudioSource(sourcePas, 24, fileList4);	
+			pas = 0;
+		}else{
+			setAudioSource(sourcePas, 25, fileList4);	
+			pas = 1;
+		}
+		
+		pannerPas.setPosition(listenerx, listenery + 5, listenerz);
+		sourcePas.start();		
+		
 	}
+	// window.onkeydown = function () {
+	// 	keyPressed = true;
+	// 	sourcePas.loop = true;
+	// }
+	// window.onkeyup = function() {
+	// 	keyPressed = false;
+	// 	sourcePas.loop = false;
+	// }
 	/**
 	*
 		SONS FOND
@@ -207,12 +293,16 @@ Jeu4.prototype.init = function() {
 	sourcetelephone = context.createBufferSource();
 	sourceneon = context.createBufferSource();
 	sourcechat = context.createBufferSource();
+	// sourcePas = context.createBufferSource();
 
 	// Sert pour la reverb, pour déverser un son dans un canal sans reverb et dans un autre canal avec reverb, permet de doser le niveau de reverb
 	dryGainNodeGlobal = context.createGain();
 	wetGainNodeGlobal = context.createGain();
 	dryGainNodeEarly = context.createGain();
 	wetGainNodeEarly = context.createGain();
+
+	gainPas = context.createGain();
+	gainPas.gain.value = 2;
 
 	// permet la spatialisation des sources
 	panner4 = context.createPanner();
@@ -222,6 +312,7 @@ Jeu4.prototype.init = function() {
 	pannerfrigo = context.createPanner();
 	pannerneon = context.createPanner();
 	pannertelephone = context.createPanner();
+	pannerPas = context.createPanner();
 	  
 	// On ne l'utilise pas mais je le laisse, car sinon çà créé la merde lors des connexions des différents éléments audio
 	lowFilter = context.createBiquadFilter();
@@ -233,7 +324,10 @@ Jeu4.prototype.init = function() {
 	// sert à créer une reverb à convolution
 	convolverGlobal = context.createConvolver();
 	convolverEarly = context.createConvolver();
-
+	//Changer
+	// sourcePas.connect(pannerPas);
+	pannerPas.connect(gainPas)
+	gainPas.connect(context.destination);
 	 
 	// Connexion des sons de la personne
 	// Connect audio processing graph
@@ -286,11 +380,11 @@ Jeu4.prototype.init = function() {
   
   window.addEventListener("keydown", keyboardJeu4, false);
      
-	lanceSonAmbiance(sourceeau, pannereau, 30, 30, 0, 10);
-  lanceSonAmbiance(sourcefrigo, pannerfrigo, 30, 30, -10, 11);
-	lanceSonAmbiance(sourcetelephone, pannertelephone, -60, -100, 0, 13);
-  lanceSonAmbiance(sourceneon, pannerneon, 0, 20, 200, 12);
-  lanceSonAmbiance(sourcechat, pannerchat, -40, 100, 100, 14);
+	lanceSonAmbiance(sourceeau, pannereau, -10, 50, 0, 18);
+  lanceSonAmbiance(sourcefrigo, pannerfrigo, -200, -200, -10, 19);
+	lanceSonAmbiance(sourcetelephone, pannertelephone, -60, 100, 0, 21);
+  //lanceSonAmbiance(sourceneon, pannerneon, -200, -200, 200, 20);
+  lanceSonAmbiance(sourcechat, pannerchat, -40, 0, 100, 22);
 	 
 
 
@@ -338,34 +432,34 @@ Jeu4.prototype.init = function() {
 		
 		// Si le listener est devant la source
 		if (listenery-y > -10 && listenery-y < -5 ){
-			setAudioSource(source4, 6, fileList4);
+			setAudioSource(source4, 14, fileList4);
 		}
 		
 		// Si le listener est devant la source très proche
 		if (listenery-y > -5 && listenery-y < -1 ){
-			setAudioSource(source4, 7, fileList4);
+			setAudioSource(source4, 15, fileList4);
 		}
 		
 		// Si le listener est derriere la source très proche
 		if (listenery-y > 1 && listenery-y < 5 ){
-			setAudioSource(source4, 5, fileList4);
+			setAudioSource(source4, 13, fileList4);
 		}
 		
 		// Si le listener est derriere la source 
-			if (listenery-y > 5 && listenery-y < 10 ){
-			setAudioSource(source4, 4, fileList4);
+		if (listenery-y > 5 && listenery-y < 10 ){
+			setAudioSource(source4, 12, fileList4);
 		}
 		
 		// Si le listener est sur la source 
-			if (trouve==true){
-				//Changer: son final 15
-			setAudioSource(source4, 9, fileList4);
+		if (trouve==true){
+				//Changer: son final 23
+			setAudioSource(source4, 23, fileList4);
 		}
 		
 		else{
 		
-			// on pioche un nombre aléatoire enter 0 et 3
-			var nb = Math.floor(Math.random() * (3));
+			// on pioche un nombre aléatoire enter 0 et 11
+			var nb = Math.floor(Math.random() * (11));
 			setAudioSource(source4, nb, fileList4);
 		}
 		
@@ -473,8 +567,9 @@ Jeu4.prototype.init = function() {
 		sourceeau.stop();
 		sourcefrigo.stop();
 		sourcetelephone.stop();
-		sourceneon.stop();
+		// sourceneon.stop();
 		sourcechat.stop();
+		// sourcePas.stop();
 		// sourceFond.stop();
 
 		var narration = new Narration();

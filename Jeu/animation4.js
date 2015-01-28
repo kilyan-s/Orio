@@ -46,7 +46,8 @@ Animation4.prototype.part1 = function() {
 		ctx.clearRect(0,0, canvas.width, canvas.height);
 
 		ctx.drawImage(bg, 0, 0);
-		
+		// ctx.fillStyle = "rgba(0,0,0,0.7)";
+ 	// 	ctx.fillRect (0, 0, canvas.width, canvas.height);
 		ctx.drawImage(nuage1Img, nuage1.positionX, nuage1.positionY);
 		ctx.drawImage(nuage2Img, nuage2.positionX, nuage2.positionY);
 		ctx.drawImage(nuage3Img, nuage3.positionX, nuage3.positionY);

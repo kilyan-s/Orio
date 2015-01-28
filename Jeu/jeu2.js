@@ -18,6 +18,10 @@ var sequence3 = false;
 var nbErreurs = 0;
 var currentTime;
 
+//Pour les phrases écouter et reproduire le son
+var sourceConsigne;
+var pannerConsigne;
+
 
 //Création du context audio
 //context = new webkitAudioContext();
@@ -57,10 +61,13 @@ Jeu2.prototype.init = function() {
 		"sons/jeu2/d2.wav",
 		"sons/jeu2/succes.wav",
 		"sons/jeu2/percute.wav",
-		"sons/jeu2/ambiance.wav",
+		"sons/jeu2/ambiance.mp3",
 		"sons/commun/recommencer.mp3",
 		"sons/jeu2/alasuite.wav",
-		"sons/commun/succes.mp3"
+		"sons/commun/succes.mp3",
+		"sons/jeu2/ecouter.mp3",
+		"sons/jeu2/reproduire.mp3"
+
 	];
 
 	/******
@@ -112,16 +119,31 @@ Jeu2.prototype.init = function() {
 	gain.connect(context.destination);
 
 	
-	//Chargement du premier son du mur
-	setAudioSource2(source, rand, fileList2);
-	currentTime = context.currentTime;
-	//Lancement du son
-	source.start(currentTime + 2);
-	//Lorsque le son est fini on joue le suivant
-	source.onended = function() {
-		//Joue le son suivant
-		relanceSon();
+	sourceConsigne = context.createBufferSource();
+	pannerConsigne = context.createPanner();
+	pannerConsigne.setPosition(0, 10, 0);
+
+	sourceConsigne.connect(pannerConsigne);
+	pannerConsigne.connect(gain);
+	gain.connect(context.destination)
+
+	setAudioSource(sourceConsigne, 11, fileList2);
+	sourceConsigne.start(context.currentTime + 2);
+
+	//Après la consigne on lance le son du mur
+	sourceConsigne.onended = function(){
+		//Chargement du premier son du mur
+		setAudioSource2(source, rand, fileList2);
+		currentTime = context.currentTime;
+		//Lancement du son
+		source.start(currentTime + 2);
+		//Lorsque le son est fini on joue le suivant
+		source.onended = function() {
+			//Joue le son suivant
+			relanceSon();
+		}
 	}
+	
 	
 
 
@@ -131,7 +153,13 @@ Jeu2.prototype.init = function() {
 	function relanceSon(){
 		//CHANGER
 		if(nbSons == nbSonsSequence){
-			window.addEventListener("keydown", keyboardJeu2, false);
+			sourceConsigne = context.createBufferSource();
+			sourceConsigne.connect(pannerConsigne);
+			setAudioSource(sourceConsigne, 12, fileList2);
+			sourceConsigne.start();
+			sourceConsigne.onended = function(){
+				window.addEventListener("keydown", keyboardJeu2, false);	
+			}
 		}else{
 			console.log("Nbsons "+nbSons);
 			//Random entre 0 et 50
@@ -340,6 +368,14 @@ Jeu2.prototype.init = function() {
 					console.log(sequence1);
 					console.log(sequence2);
 					console.log(sequence3);
+
+					// sourceConsigne = context.createPanner();
+					// sourceConsigne.connect(pannerConsigne);
+					// setAudioSource(sourceConsigne, 11, fileList2);
+					// sourceConsigne.start();
+					// sourceConsigne.onended = function() {
+					// 	// body...
+					// }
 					//On relance un séquence de sons
 					var jeu = new Jeu2();
 					jeu.init();
@@ -541,7 +577,7 @@ Jeu2.prototype.instructions = function() {
 	"sons/instructions/jeu2.mp3",
 	"sons/instructions/jeu22j.mp3",
 	"sons/instructions/fin_instructions.mp3",
-	"sons/jeu2/ambiance.wav"
+	"sons/jeu2/ambiance.mp3"
 	];
 	//Source Fond
 	sourceFond = context.createBufferSource();

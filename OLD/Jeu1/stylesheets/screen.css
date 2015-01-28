@@ -72,13 +72,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   position: relative;
   width: 800px;
   height: 600px;
-  margin-left: calc(50% - 400px);
-  /*border :1px solid black;*/
 }
-
 
 /* line 15, ../sass/screen.scss */
 #canvas {
   margin-top: -600px;
 }
-

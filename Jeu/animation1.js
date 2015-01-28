@@ -229,15 +229,15 @@ Animation1.prototype.part3 = function() {
 Animation1.prototype.part4 = function() {
 	clearInterval(timer);
 	var nuage1Img = new Image();
-	nuage1Img.src = "img/menu/cloud1.svg";
+	nuage1Img.src = "img/animation/planVillage/cloud1.svg";
 	var nuage1 = {
 		positionX : 0,
 		positionY : 50,
 		vitesse : 0.7
 	};
-
+	
 	var nuage2Img = new Image();
-	nuage2Img.src = "img/menu/cloud2.svg";
+	nuage2Img.src = "img/animation/planVillage/cloud2.svg";
 	var nuage2 = {
 		positionX : 710,
 		positionY : 60,
@@ -245,19 +245,51 @@ Animation1.prototype.part4 = function() {
 	};
 
 	var nuage3Img = new Image();
-	nuage3Img.src = "img/menu/cloud3.svg";
+	nuage3Img.src = "img/animation/planVillage/cloud3.svg";
 	var nuage3 = {
 		positionX : 400,
 		positionY : 140,
 		vitesse : 0.8
 	};
-
+	
 	var nuage4Img = new Image();
-	nuage4Img.src = "img/menu/cloud4.svg";
+	nuage4Img.src = "img/animation/planVillage/cloud4.svg";
 	var nuage4 = {
 		positionX : 200,
 		positionY : 170,
 		vitesse : -0.75
+	};
+
+	var nuage5Img = new Image();
+	nuage5Img.src = "img/animation/planVillage/cloud5.svg";
+	var nuage5 = {
+		positionX : 480,
+		positionY : 20,
+		vitesse : -0.9
+	};
+	
+	var nuage6Img = new Image();
+	nuage6Img.src = "img/animation/planVillage/cloud6.svg";
+	var nuage6 = {
+		positionX : 710,
+		positionY : 160,
+		vitesse : 0.8
+	};
+
+	var nuage7Img = new Image();
+	nuage7Img.src = "img/animation/planVillage/cloud7.svg";
+	var nuage7 = {
+		positionX : -200,
+		positionY : 100,
+		vitesse : 1
+	};
+	
+	var nuage8Img = new Image();
+	nuage8Img.src = "img/animation/planVillage/cloud8.svg";
+	var nuage8 = {
+		positionX : 400,
+		positionY : 130,
+		vitesse : -0.95
 	};
 
 	var soleilImg = new Image();
@@ -266,13 +298,11 @@ Animation1.prototype.part4 = function() {
 		positionY : 30,
 		angle : 360
 	};
-	soleilImg.src = "img/menu/sun.svg";
-
+	soleilImg.src = "img/animation/menu/sun.svg";
 
 	var bg = new Image();
-	bg.src = "img/menu/bg.svg";
+	bg.src = "img/animation/menu/bg.svg";
 
-	//Deplacer le objets sur la scene
 	function deplacer (nomObjet){
 		nomObjet.positionX += nomObjet.vitesse;
 		if(nomObjet.positionX >= 880) {
@@ -282,25 +312,30 @@ Animation1.prototype.part4 = function() {
 			nomObjet.vitesse *= -1;
 		}
 	}
-
-	timer = window.setInterval(animation, 100);
 	
+	timer = window.setInterval(animation, 30);
+
 	function animation() {
 		ctx.clearRect(0,0, canvas.width, canvas.height);
-
 		ctx.drawImage(bg, 0, 0);
-
 		ctx.drawImage(soleilImg, 20, -20);
-
 		ctx.drawImage(nuage1Img, nuage1.positionX, nuage1.positionY);
 		ctx.drawImage(nuage2Img, nuage2.positionX, nuage2.positionY);
 		ctx.drawImage(nuage3Img, nuage3.positionX, nuage3.positionY);
 		ctx.drawImage(nuage4Img, nuage4.positionX, nuage4.positionY);
-	
+		ctx.drawImage(nuage5Img, nuage5.positionX, nuage5.positionY);
+		ctx.drawImage(nuage6Img, nuage6.positionX, nuage6.positionY);
+		ctx.drawImage(nuage7Img, nuage7.positionX, nuage7.positionY);
+		ctx.drawImage(nuage8Img, nuage8.positionX, nuage8.positionY);
+
 		deplacer(nuage1);
 		deplacer(nuage2);
 		deplacer(nuage3);
 		deplacer(nuage4);
+		deplacer(nuage5);
+		deplacer(nuage6);
+		deplacer(nuage7);
+		deplacer(nuage8);
 	}
 };
 //Plan présentation Azahara
@@ -982,13 +1017,15 @@ Animation1.prototype.part14 = function() {
 	}
 };
 //Interieur maison vide
+var bgMaisonInterieur = new Image();
+bgMaisonInterieur.src = "img/animation/chezAzahara/bg.svg";
+
 Animation1.prototype.maisonVide = function() {
 	clearInterval(timer);
-	var bg = new Image();
-	bg.src = "img/animation/chezAzahara/bg.svg";
+	
 
 	ctx.clearRect(0,0, canvas.width, canvas.height);
-	ctx.drawImage(bg, 0, 0);
+	ctx.drawImage(bgMaisonInterieur, 0, 0);
 
 };
 //Orio descend
